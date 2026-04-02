@@ -18,3 +18,26 @@
      (cons 0(crear-fila(- n 1))) ;construye una nueva lista colocando el elemento 0 al inicio de otra lista.
      ) ;La otra lista se obtiene llamando recursivamente a crear-fila con n-1.
 )
+
+
+;------------------------------------------------------------
+; Funcion: Crear tablero
+; Descripcion: Se crea un tablero vacio de m filas y n columnas          
+;
+; Parametros:
+;  m: el número de filas.
+;  n: el número de columnas.
+; Retorna:
+;   Un tablero de tamaño mxn
+; Ejemplo: (crear-tablero 3 4)
+; resultado: ((0 0 0 0)
+;             (0 0 0 0)
+;             (0 0 0 0))
+;
+(define(crear-tablero m n) ;funcion crear tablero de tamano mxn 
+  (if( = m 0 ) '() ; si m es igual a cero devuelve la lista vacia, sino pasa a crear fila
+     (cons(crear-fila n) ; crear-fila n genera una fila de longitud n llena de ceros
+          (crear-tablero(- m 1) n )) ;crea el resto del tablero con una fila menos.
+     ;cons coloca la fila recién creada al inicio de la lista de filas que forman el tablero.
+     )
+  )
