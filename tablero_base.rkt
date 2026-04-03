@@ -92,15 +92,45 @@
 ; Retorna:
 ;   La lista con el nuevo valor, en la posicion que se queria cambiar, sin el valor viejo. 
 ;
-; Ejemplo: colocar un 4 en vez de 2
+; Ejemplo: colocar un 99 en vez de 30
 ; (reemplazar-en-lista '(10 20 30 40) 2 99)
 
 (define(reemplazar-en-lista lista indice valor)
   (cond
     [(null? lista)'()] ; si la lista esta vacia, devuelve la lista vacia
-    [(= indice 0)(cons valor(cdr lista))]; si el indice es cero, significa que queremos reemplazar el primer elemento, entonces se construye una nueva lista con valor como primer elemento y el resto de la lista (cdr lista) igual.
-    [else (cons(car lista); si el índice no es 0, mantienes el primer elemento (car lista) igual.
+    [(= indice 0)(cons valor(cdr lista))]; si el indice es cero, significa que se quiere reemplazar el primer elemento, entonces se construye una nueva lista con valor como primer elemento y el resto de la lista (cdr lista) igual.
+    [else (cons(car lista); si el índice no es 0, se mantiene el primer elemento (car lista) igual.
                (reemplazar-en-lista(cdr lista)(- indice 1) valor))]; luego se llama recursivamente a reemplazar-en-lista sobre el resto de la lista (cdr lista), reduciendo el índice en 1.
-    ); Así se va avanzando hasta llegar a la posición correcta.
+    ); Se avanza asi hasta llegar a la posición correcta.
   )
 
+;------------------------------------------------------------
+; Funcion: reemplazar-celda
+; Descripcion: Reemplaza una celda del tablero y coloca en ella un nuevo valor, es decir modifica un elemento dentro del tablero, accediendo primero a la fila y luego a la columna.   
+;
+; Parametros:
+;  tablero: lista de listas (el tablero).
+;  fila: índice de la fila donde se quiere reemplazar el valor.
+;  col: índice de la columna dentro de esa fila.
+;  valor: el nuevo valor que quieres poner en esa celda.
+
+; Retorna: Devuelve el tablero con el nuevo valor en la celda especifica que se queria cambiar
+;   
+; Ejemplo: (reemplazar-celda (crear-tablero 4 4) 1 2 2)
+; Resultado: ((0 0 0 0)
+;             (0 0 2 0)
+;             (0 0 0 0)
+;             (0 0 0 0))
+
+(define(reemplazar-celda tablero fila col valor)
+  (cond
+    [(null? tablero) '()] ;si el tablero está vacío, devuelve la lista vacía.
+    [(= fila 0)  ;si la fila es 0, significa que se quiere modificar la primera fila.
+     (cons(reemplazar-en-lista (car tablero) col valor); (car tablero),  obtiene la primera fila, luego reemplazar-en-lista reemplaza el valor en la columna col de esa fila.
+          (cdr tablero))]  ; cons construye un nuevo tablero con esa fila en especifico modificada y el resto del tablero igual.
+    [else
+     (cons(car tablero) ; si la fila no es 0, se mantiene la primera fila igual (car tablero).
+          (reemplazar-celda(cdr tablero)(- fila 1)col valor)) ;Luego se llama recursivamente a reemplazar-celda sobre el resto del tablero (cdr tablero), reduciendo fila en 1.
+     ]; y se hace esto repetidamente hasta llegar a la fila correcta 
+    )
+  )
