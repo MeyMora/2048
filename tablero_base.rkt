@@ -44,8 +44,8 @@
 
 
 ;------------------------------------------------------------
-; Funcion: Crear funcion elemento-lista.
-; Descripcion: Obtiene un elemento de una lista           
+; Funcion: elemento-lista.
+; Descripcion: Obtiene un elemento de una lista simple           
 ;
 ; Parametros:
 ;  lista: la lista de la cual se quiere obtener un elemento.
@@ -61,4 +61,23 @@
      (elemento-lista(cdr lista) (- indice 1)); como el indice no es cero, avanzamos en la lista, cdr devuelve el primer elemento de la lista
      ); se llama a elemento-lista pero con la lista reducida y disminuyendo el indice
   )
+
+;------------------------------------------------------------
+; Funcion: Obtener-celda.
+; Descripcion: Obtener valor en posicion fila-columna de una celda en el tablero.        
+;
+; Parametros:
+;  tablero: la lista de listas que representa el tablero.
+;  fila: el índice de la fila que se quiere obtener.
+;  col: el índice de la columna dentro de esa fila. 
+; Retorna:
+;   El elemento de la lista que se quiere obtener de acuerdo al indice
+; Ejemplo: (obtener-celda (crear-tablero 3 4) 1 2)
+; resultado: 0
+;
+(define (obtener-celda tablero fila col) ; funcion para obtener la posicion de una celda 
+  (elemento-lista(elemento-lista tablero fila)col) ;obtiene la fila número fila del tablero (ya que elemento-lista devuelve el elemento en la posición indicada).
+  ) ;Como el tablero es una lista de filas, esto nos devuelve una lista que representa esa fila.
+    ;Ahora, sobre esa fila obtenida, se busca el elemento en la posición col.
+    ;Ese elemento es el valor de la celda en la posición (fila, col).
 
