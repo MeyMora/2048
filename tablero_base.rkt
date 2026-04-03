@@ -41,3 +41,24 @@
      ;cons coloca la fila recién creada al inicio de la lista de filas que forman el tablero.
      )
   )
+
+
+;------------------------------------------------------------
+; Funcion: Crear funcion elemento-lista.
+; Descripcion: Obtiene un elemento de una lista           
+;
+; Parametros:
+;  lista: la lista de la cual se quiere obtener un elemento.
+;  indice: la posición del elemento que se quiere (empezando desde 0).
+; Retorna:
+;   El elemento de la lista que se quiere obtener de acuerdo al indice
+; Ejemplo: (elemento-lista '(10 20 5 40) 2)
+; resultado: 5
+;                     
+(define(elemento-lista lista indice) ; funcion para obtener un elemento de una lista 
+  (if(= indice 0) ; si el indice es igual a cero, devuelve el primer elemento de la lista
+     (car lista) ; devuelve el primer elemento de la lista
+     (elemento-lista(cdr lista) (- indice 1)); como el indice no es cero, avanzamos en la lista, cdr devuelve el primer elemento de la lista
+     ); se llama a elemento-lista pero con la lista reducida y disminuyendo el indice
+  )
+
