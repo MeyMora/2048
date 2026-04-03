@@ -71,7 +71,7 @@
 ;  fila: el índice de la fila que se quiere obtener.
 ;  col: el índice de la columna dentro de esa fila. 
 ; Retorna:
-;   El elemento de la lista que se quiere obtener de acuerdo al indice
+;   El valor en la posicion fila-columna del tablero
 ; Ejemplo: (obtener-celda (crear-tablero 3 4) 1 2)
 ; resultado: 0
 ;
@@ -80,4 +80,27 @@
   ) ;Como el tablero es una lista de filas, esto nos devuelve una lista que representa esa fila.
     ;Ahora, sobre esa fila obtenida, se busca el elemento en la posición col.
     ;Ese elemento es el valor de la celda en la posición (fila, col).
+
+;------------------------------------------------------------
+; Funcion: reemplazar-en-lista
+; Descripcion: Funcion para reemplazar una posición en una lista       
+;
+; Parametros:
+;  lista: la lista original.
+;  indice: la posición del elemento que se quiere reemplazar (empezando en 0).
+;  valor: el nuevo valor que se quiere poner en esa posición.
+; Retorna:
+;   La lista con el nuevo valor, en la posicion que se queria cambiar, sin el valor viejo. 
+;
+; Ejemplo: colocar un 4 en vez de 2
+; (reemplazar-en-lista '(10 20 30 40) 2 99)
+
+(define(reemplazar-en-lista lista indice valor)
+  (cond
+    [(null? lista)'()] ; si la lista esta vacia, devuelve la lista vacia
+    [(= indice 0)(cons valor(cdr lista))]; si el indice es cero, significa que queremos reemplazar el primer elemento, entonces se construye una nueva lista con valor como primer elemento y el resto de la lista (cdr lista) igual.
+    [else (cons(car lista); si el índice no es 0, mantienes el primer elemento (car lista) igual.
+               (reemplazar-en-lista(cdr lista)(- indice 1) valor))]; luego se llama recursivamente a reemplazar-en-lista sobre el resto de la lista (cdr lista), reduciendo el índice en 1.
+    ); Así se va avanzando hasta llegar a la posición correcta.
+  )
 
