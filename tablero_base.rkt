@@ -235,13 +235,29 @@
 ;
 ; Resultado: '(1 4 3 4 5 12 0 0)
 
-; Para rellenar una fila con ceros hacemos:
-
-
 (define (mover-fila-izquierda fila)
   (rellenar-con-ceros ; primero se elimina todos los ceros de la lista.
    (combinar-fila  ;luego combina números iguales consecutivos sumándolos.
     (quitar-ceros fila))  ;Rellena con ceros al final hasta que la lista tenga el mismo tamaño que la original
    (mi-length fila)
    )
+  )
+;----------------------------Aplicando movimiento hacia la izquierda en el tablero--------------------
+
+; Funcion: mover-tablero-izquierda
+; Descripcion: Funcion que mueve todas las filas del tablero hacia la izquierda
+;
+; Parametros:
+;  fila: fila que queremos mover hacia la izquierda
+;
+; Retorna: La lista movida hacia la izquierda, si hay valores iguales los suma y combina, y la rellena de ceros si hace falta
+;   
+; Ejemplo: (mover-tablero-izquierda '((1 2 2 3)(1 2 3 4)(4 4 5 6)(8 8 8 2)))
+;
+; Resultado: '(1 4 3 4 5 12 0 0)
+(define(mover-tablero-izquierda tablero)
+  (if (null? tablero) '() ;Si el tablero está vacío (null?), devuelve la lista vacía.
+      (cons(mover-fila-izquierda(car tablero)); car tablero quiere decir la primera fila del tablero, y se aplica mover-fila-izquierda a esa fila.
+           (mover-tablero-izquierda (cdr tablero))); cdr tablero , quiere decir que luego agarramos el resto de las filas y luego llamamos recursivamente a la función para procesar las demás filas.
+      )
   )
