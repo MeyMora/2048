@@ -181,3 +181,21 @@
    )
   )
 
+;Funcion propia de length para una lista
+; Funcion: mi-length
+; Descripcion: Es una funcion que cuenta cuantos elementos contiene una lista
+;
+; Parametros:
+;  lista: lista a la cual le vamos a contar cuantos elementos tiene
+
+; Retorna: Numero de elementos que tiene esa lista
+;   
+; Ejemplo: (mi-length '(7 9 11))
+; Resultado: 3
+
+(define(mi-length lista)
+  (if (null? lista) ; pregunta si la lista esta vacia
+      0  ; si esta vacia devuelve cero
+      (+ 1 (mi-length(cdr lista))) ; si la lista no esta vacia, nos devuelve la lista sin el primer elemento, llamamos recursivamente mi-length
+      ); se suma uno para ir contando los elementos en la lista 
+  )
