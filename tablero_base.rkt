@@ -219,3 +219,29 @@
     [else (rellenar-con-ceros (append fila '(0)) tamano)]; Si la lista aún no tiene el tamaño deseado, se le agrega un 0 al final con append, y se vuelve a llamar a la función.
   )
 )
+
+;----------Movimiento hacia la izquierda en una fila---------------------------
+;Las funciones anteriores nos sirven ahora para poder hacer un movimiento de fila hacia la izquierda
+
+; Funcion: mover-fila-izquierda
+; Descripcion: Es una funcion que mueve la fila fila hacia la izquierda, combinando numeros de igual valor y despues rellenando con ceros si hace falta
+;
+; Parametros:
+;  fila: fila que queremos mover hacia la izquierda
+;
+; Retorna: La lista movida hacia la izquierda, si hay valores iguales los suma y combina, y la rellena de ceros si hace falta
+;   
+; Ejemplo: (mover-fila-izquierda '(1 2 2 3 4 5 6 6))
+;
+; Resultado: '(1 4 3 4 5 12 0 0)
+
+; Para rellenar una fila con ceros hacemos:
+
+
+(define (mover-fila-izquierda fila)
+  (rellenar-con-ceros ; primero se elimina todos los ceros de la lista.
+   (combinar-fila  ;luego combina números iguales consecutivos sumándolos.
+    (quitar-ceros fila))  ;Rellena con ceros al final hasta que la lista tenga el mismo tamaño que la original
+   (mi-length fila)
+   )
+  )
