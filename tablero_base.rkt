@@ -199,3 +199,23 @@
       (+ 1 (mi-length(cdr lista))) ; si la lista no esta vacia, nos devuelve la lista sin el primer elemento, llamamos recursivamente mi-length
       ); se suma uno para ir contando los elementos en la lista 
   )
+
+; Funcion: rellenar-con-ceros
+; Descripcion: Es una funcion que rellena con ceros una fila, hasta un tamano especifico
+;
+; Parametros:
+;  fila: fila a la cual le queremos colocar ceros
+;  tamano: el tamaño deseado de la lista
+;
+; Retorna: La lista rellena con ceros, hasta el tamano especifico
+;   
+; Ejemplo: (rellenar-con-ceros '(1 2 3 4) 5)
+; Resultado: 3
+; Para rellenar una fila con ceros hacemos:
+
+(define (rellenar-con-ceros fila tamano)
+  (cond
+    [(= (mi-length fila) tamano) fila] ;Si la longitud actual de la lista (mi-length fila) es igual al tamaño deseado (tamano), simplemente devuelve la lista tal como está.
+    [else (rellenar-con-ceros (append fila '(0)) tamano)]; Si la lista aún no tiene el tamaño deseado, se le agrega un 0 al final con append, y se vuelve a llamar a la función.
+  )
+)
