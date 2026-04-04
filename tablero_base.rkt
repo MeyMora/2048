@@ -134,3 +134,24 @@
      ]; y se hace esto repetidamente hasta llegar a la fila correcta 
     )
   )
+;------------------------------------------------------------
+; Funcion: quitar-ceros 
+; Descripcion: Elimina los ceros de una fila 
+;
+; Parametros:
+;  fila: Fila a la que se desea eliminar los ceros
+
+; Retorna: Devuelve la fila mas corta, sin los ceros 
+;   
+; Ejemplo: (quitar-ceros '(2 0 2 4))
+; Resultado: '(2 2 4)
+
+
+(define (quitar-ceros fila) ; crear una funcion llamada quitar-ceros
+  (cond
+    [(null? fila) '()] ; pregunta si la fila esta vacia, si es asi devuelve la lista vacia
+    [(= (car fila) 0)(quitar-ceros(cdr fila))]; car obtiene  primer elemento de la lista, si el primer elemento es cero, se ignora y se llama a quitar-ceros recursivamente con el resto de la fila 
+    [else ;sino
+     (cons(car fila)(quitar-ceros(cdr fila)))]; se construye una nueva lista, colocando el primer elemento de la lista al frente, seguido del resto de la fila 
+    )
+  )
