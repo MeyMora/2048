@@ -155,3 +155,29 @@
      (cons(car fila)(quitar-ceros(cdr fila)))]; se construye una nueva lista, colocando el primer elemento de la lista al frente, seguido del resto de la fila 
     )
   )
+;Como se ocupa combinar numeros iguales contiguos para el juego, se realiza la siguiente funcion:
+;------------------------------------------------------------
+; Funcion: combinar-fila
+; Descripcion: Combina los numeros que son iguales en una fila, es decir esta función recorre una lista y combina pares consecutivos de números iguales sumándolos en uno solo.
+;
+; Parametros:
+;  fila: Fila a la que se combina elementos
+
+; Retorna: Devuelve la fila pero con los elementos iguales combinados
+;   
+; Ejemplo: (combinar-fila '(2 2 4))
+; Resultado: '(4 4)
+
+(define(combinar-fila fila)
+  (cond
+    [(null?  fila)'()] ; pregunta si la fila esta vacia, si es asi devuelve la lista vacia
+    [(null? (cdr fila))(cons(car fila) '() )] ; si el resto de la fila esta vacio entonces quiere decir que hay solo un elemento en las fila, por lo cual se devuelve solo ese elemento
+    [(= (car fila) (car(cdr fila))); pregunta si el primer elemento y el segundo elemento son iguales
+     (cons (+ (car fila)(car(cdr fila))); si son iguales se suman y se colocan como un solo elemento en la nueva lista.
+           (combinar-fila (cdr(cdr fila))))]; se continua la recursion pero sin contar esos dos elementos
+   [else     ; si los dos primeros elementos no son iguales
+     (cons(car fila) ;se conserva el primer elemento
+          (combinar-fila (cdr fila)))]  ;Se llama recursivamente a la función con el resto de la lista
+   )
+  )
+
