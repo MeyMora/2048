@@ -301,3 +301,26 @@
   (invertir (mover-fila-izquierda(invertir fila))) ;  primero se aplica la función mover-fila-izquierda sobre la lista invertida. Mueve los elementos, pero en la posicion invertida
   ) ; luego se hace invertir al final para volver a la posicion original, pero ya habiendo movido los elementos 
 
+
+;----------------------------Aplicando movimiento hacia la derecha en el tablero--------------------
+
+
+; Funcion: mover-fila-derecha
+; Descripcion: Funcion que desplaza todas las filas del tablero hacia la derecha, las combina y rellena con ceros 
+;
+; Parametros:
+; fila: es una lista (por ejemplo, una fila de números o elementos en un tablero). La función espera recibir una lista como entrada.
+;
+; Retorna: Retorna una nueva lista con los elementos de fila desplazados hacia la derecha.
+;   
+; Ejemplo: (mover-tablero-derecha '((2 0 2 4)(0 2 2 0)(4 4 0 4)(2 0 0 2)))
+;
+; Resultado: '((0 0 4 4) (0 0 0 4) (0 0 4 8) (0 0 0 4))
+
+
+(define(mover-tablero-derecha tablero)
+  (if (null? tablero) '() ;Si el tablero está vacío (null?), devuelve la lista vacía.
+      (cons(mover-fila-derecha(car tablero)); car tablero quiere decir la primera fila del tablero, y se aplica mover-fila-derecha a esa fila.
+           (mover-tablero-derecha (cdr tablero))); cdr tablero , quiere decir que luego agarramos el resto de las filas y luego llamamos recursivamente a la función para procesar las demás filas.
+      )
+  )
