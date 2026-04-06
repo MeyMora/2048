@@ -285,3 +285,19 @@
 
   )
  
+; Funcion: mover-fila-derecha
+; Descripcion: La función mueve los elementos de la lista hacia la derecha. Para lograrlo: Invierte la lista (invertir fila) y aplica la función mover-fila-izquierda sobre esa lista invertida. Al final vuelve a invertir el resultado.
+;
+; Parametros:
+; fila: es una lista (por ejemplo, una fila de números o elementos en un tablero). La función espera recibir una lista como entrada.
+;
+; Retorna: Retorna una nueva lista con los elementos de fila desplazados hacia la derecha.
+;   
+; Ejemplo: (mover-fila-derecha '(0 0 4 4))
+;
+; Resultado: '(0 0 0 8)
+
+(define (mover-fila-derecha fila)
+  (invertir (mover-fila-izquierda(invertir fila))) ;  primero se aplica la función mover-fila-izquierda sobre la lista invertida. Mueve los elementos, pero en la posicion invertida
+  ) ; luego se hace invertir al final para volver a la posicion original, pero ya habiendo movido los elementos 
+
