@@ -1,12 +1,12 @@
 #lang racket
 (require 2htdp/image)
- 
+
 ;------------------------------------------------------------
 ; CONSTANTES GLOBALES
 ;------------------------------------------------------------
- 
+
 (define TAMANO-CELDA 100)
- 
+
 ;------------------------------------------------------------
 ; Funcion: hex->color
 ; Descripcion: Convierte un string de color hexadecimal
@@ -27,7 +27,7 @@
    (string->number (substring hex 1 3) 16)
    (string->number (substring hex 3 5) 16)
    (string->number (substring hex 5 7) 16)))
- 
+
 ;------------------------------------------------------------
 ; Funcion: color-fondo-celda
 ; Descripcion: Devuelve el color de fondo correspondiente
@@ -59,7 +59,7 @@
     [(= valor 1024) (hex->color "#edc53f")]
     [(= valor 2048) (hex->color "#edc22e")]
     [else           (hex->color "#3c3a32")]))
- 
+
 ;------------------------------------------------------------
 ; Funcion: color-texto-celda
 ; Descripcion: Devuelve el color del texto segun el valor
@@ -80,7 +80,7 @@
     [(= valor 2) (hex->color "#776e65")]
     [(= valor 4) (hex->color "#776e65")]
     [else        (hex->color "#f9f6f2")]))
- 
+
 ;------------------------------------------------------------
 ; Funcion: tamano-fuente-celda
 ; Descripcion: Devuelve el tamaño de fuente adecuado segun
@@ -101,7 +101,7 @@
     [(< valor 100)  44]
     [(< valor 1000) 36]
     [else           28]))
- 
+
 ;------------------------------------------------------------
 ; Funcion: texto-celda
 ; Descripcion: Genera la imagen del texto que se muestra
@@ -123,7 +123,7 @@
     [else        (text (number->string valor)
                        (tamano-fuente-celda valor)
                        (color-texto-celda valor))]))
- 
+
 ;------------------------------------------------------------
 ; Funcion: dibujar-celda
 ; Descripcion: Dibuja una celda completa del tablero 2048.
@@ -144,4 +144,77 @@
   (overlay
    (texto-celda valor)
    (square TAMANO-CELDA "solid" (color-fondo-celda valor))))
- 
+
+
+;------------------------------------------------------------
+; PRUEBAS
+; Descomentar para probar visualmente cada caso en DrRacket
+;------------------------------------------------------------
+
+; (dibujar-celda 0)
+; (dibujar-celda 2)
+; (dibujar-celda 4)
+; (dibujar-celda 8)
+; (dibujar-celda 16)
+; (dibujar-celda 32)
+; (dibujar-celda 64)
+; (dibujar-celda 128)
+; (dibujar-celda 256)
+; (dibujar-celda 512)
+; (dibujar-celda 1024)
+; (dibujar-celda 2048)
+
+;------------------------------------------------------------
+; PASO 2 - DIBUJAR FILA
+;------------------------------------------------------------
+
+(define ESPACIO 10)
+
+;------------------------------------------------------------
+; Funcion: separador-celda
+; Descripcion: Crea una imagen rectangular que sirve como
+;              espacio visual entre celdas dentro de una fila.
+;              Usa el mismo color de fondo del tablero para
+;              integrarse con el diseño general.
+;
+; Parametros:
+;   ninguno
+;
+; Retorna: imagen rectangular de ESPACIO x TAMANO-CELDA
+;          con el color de fondo del tablero
+;
+; Ejemplo: (separador-celda)
+; Resultado: imagen de 10x100 en color cafe oscuro
+;------------------------------------------------------------
+(define (separador-celda)
+  (rectangle ESPACIO TAMANO-CELDA "solid" (hex->color "#bbada0")))
+
+;------------------------------------------------------------
+; Funcion: dibujar-fila
+; Descripcion: Dibuja una fila completa del tablero uniendo
+;              sus celdas horizontalmente con separadores
+;              entre ellas. Recorre la lista de forma
+;              recursiva sin usar map ni funciones de orden
+;              superior.
+;
+; Parametros:
+;   fila: lista de numeros enteros con los valores de
+;         cada celda (ej: '(2 0 4 8))
+;
+; Retorna: imagen con todas las celdas de la fila unidas
+;          de izquierda a derecha con separadores
+;
+; Ejemplo: (dibujar-fila '(2 0 512 4))
+; Resultado: imagen horizontal con 4 celdas y separadores
+;------------------------------------------------------------
+(define (dibujar-fila fila)
+  (cond
+    [(null? fila)
+     empty-image]
+    [(null? (cdr fila))
+     (dibujar-celda (car fila))]
+    [else
+     (beside
+      (dibujar-celda (car fila))
+      (separador-celda)
+      (dibujar-fila (cdr fila)))]))
