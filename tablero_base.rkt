@@ -261,3 +261,27 @@
            (mover-tablero-izquierda (cdr tablero))); cdr tablero , quiere decir que luego agarramos el resto de las filas y luego llamamos recursivamente a la función para procesar las demás filas.
       )
   )
+;----------Movimiento hacia la derecha en una fila---------------------------
+;como tenemos que hacer el movimiento hacia la derecha, primero tenemos que hacer invertir fila para cambiar le orden.
+
+; Funcion: invertir lista
+; Descripcion: Invierte la lista 
+;
+; Parametros:
+;  lista: lista de elementos los cuales queremos invertir para que tengan un orden diferente
+;
+; Retorna: La lista invertida
+;   
+; Ejemplo: (invertir'(1 2 3 4))
+;
+; Resultado: '(4 3 2 1)
+
+(define(invertir lista)
+  (if (null? lista)'() ; pregunta si la lista está vacía, si es asi devuelve la lista vacia, no hay nada que invertir
+      (append ;  concatena la lista invertida de la cola con el primer elemento al final
+       (invertir(cdr lista)); saca el resto de la lista y lo invierte utilizando invertir
+       (list(car lista))) ; convierte el primer elemento en una lista de un solo elemento.
+      )
+
+  )
+ 
