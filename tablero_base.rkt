@@ -484,3 +484,23 @@
     ) ; Y así sigue buscando fila por fila.
   )
 
+;-------------------------Funcion para verificar si el jugador gano el juego---------------------------------------------------------------------------------
+;
+;
+; Funcion: gano?
+; Descripcion: Llama a la función tablero-contiene? para revisar si el número 2048 aparece en alguna posición del tablero.
+;
+; Parametros:
+; tablero: una lista de listas que representa el tablero del juego (cada sublista es una fila).
+;
+; Retorna:
+;          #t si el tablero contiene el número 2048 (es decir, el jugador ganó).
+;          #f si no lo contiene.
+;   
+; Ejemplo: (gano? '((2 4 8)(16 32 64)(128 256 2048)))
+;
+; Resultado: #t
+
+(define(gano? tablero)
+  (tablero-contiene? tablero 2048) ; Llama a la función tablero-contiene? para revisar si el número 2048 aparece en alguna posición del tablero.
+  )
