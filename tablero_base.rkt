@@ -697,3 +697,31 @@
                       ; y se llama recursivamente a la función con el resto de la fila (cdr fila), manteniendo el mismo número de fila y aumentando el número de columna en 1.
     )
   )
+;----------------Posiciones vacias en el tablero-----------------------------------------------------------
+
+
+; Funcion: posiciones-vacias
+; Descripcion: Recorre una fila del tablero y devuelve una lista con las coordenadas de todas las posiciones vacías (donde el valor es 0).
+;
+; Parametros:
+;       tablero: Es una lista de listas (una matriz), que representa el tablero de juego. Cada sublista corresponde a una fila.
+;       num-fila: Un número entero que indica el índice de la fila actual que se está procesando.
+;
+; Retorna:
+;    Devuelve una lista de posiciones vacías en el tablero de la forma fila,col.
+;    
+;   
+; Ejemplo: (posiciones-vacias '((1 0 3)(0 2 0)(4 5 0)) 0)
+;
+; Resultado:'((1 1) (1 3))
+
+(define(posiciones-vacias tablero num-fila)
+  (cond
+    [(null? tablero) '()] ;Si el tablero está vacío, retorna una lista vacía '().
+    [else
+     (append ;Une las posiciones vacías encontradas en la fila actual con las del resto del tablero.
+      (posiciones-vacias-fila (car tablero) num-fila 0) ; Toma la primera fila del tablero.
+             ;Se llama con esa fila, el número de fila actual y 0 (que representa la primera columna). Esta función auxiliar devuelve las posiciones vacías de esa fila.
+             (posiciones-vacias (cdr tablero)(+ num-fila 1)))] ; Se llama a posiciones-vacias sobre el resto del tablero, aumentando el número de fila en 1.
+    )
+  )
