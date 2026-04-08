@@ -725,3 +725,27 @@
              (posiciones-vacias (cdr tablero)(+ num-fila 1)))] ; Se llama a posiciones-vacias sobre el resto del tablero, aumentando el número de fila en 1.
     )
   )
+
+;---------------------------------------Elegir una poscion vacia al azar----------------------------------
+
+; Funcion: elemento-aleatorio
+; Descripcion: Selecciona un elemento aleatorio de una lista.
+;
+; Parametros:
+;             lista: Una lista de elementos (pueden ser números, símbolos, cadenas, etc.).
+;
+; Retorna:
+;    Devuelve un único elemento de la lista, seleccionado al azar.
+;   
+; Ejemplo:  (elemento-aleatorio '(a b c d))
+;
+; Resultado:'a 
+;           'b 
+;           'c
+
+
+(define(elemento-aleatorio lista)
+  (elemento-lista 
+   lista(random(mi-length lista))) ; Calcula la longitud de la lista con mi-length, y genera un número aleatorio entre 0 y (mi-length lista - 1) usando random.
+  ) ;Usa ese número como índice para obtener el elemento correspondiente con elemento-lista.
+
