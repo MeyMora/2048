@@ -606,3 +606,32 @@
     [else #f] ;Si las primeras filas difieren, no hace falta seguir comparando.
     )
   )
+
+
+;---------------------------Verificar si hay movimiento posible, aunque no hayan ceros---------------------------------------------------------------------------------
+
+
+; Funcion: hay-movimientos?
+; Descripcion:  La función compara el tablero actual con el tablero resultante de aplicar cada movimiento posible (izquierda, derecha, arriba, abajo).            
+;               Si al aplicar un movimiento el tablero cambia, significa que ese movimiento es válido.
+;               Si ninguno de los movimientos cambia el tablero, entonces no hay movimientos posibles
+;
+; Parametros:
+;         tablero: Una lista de listas que representa el tablero del juego.
+;
+; Retorna:
+;  #t (true): si existe al menos un movimiento válido que cambie el tablero.
+;  #f (false): si ningún movimiento cambia el tablero, es decir, el jugador está bloqueado.
+;   
+; Ejemplo: (hay-movimientos? '((2 2 2 4)(4 2 4 2)(2 4 2 4)(4 2 4 2)))
+;
+; Resultado: #t
+
+(define(hay-movimientos? tablero)
+  (or (not(tableros-iguales?  tablero (mover-tablero-izquierda tablero))) ; Se mueve el tablero hacia la izquierda, Si el tablero resultante es distinto al original, entonces hay un movimiento válido hacia la izquierda.
+                                                                          ;El not convierte la comparación en verdadero si sí hubo un cambio.
+      (not (tableros-iguales? tablero (mover-tablero-derecha tablero))) ;se mueve el tablero hacia la derecha y se verifica si hubo un cambio
+      (not (tableros-iguales? tablero (mover-tablero-arriba tablero))) ;se mueve el tablero hacia arriba y se verifica si hubo un cambio
+      (not (tableros-iguales? tablero (mover-tablero-abajo tablero)))  ;se mueve el tablero hacia abajo y se verifica si hubo un cambio
+      ) ;El or nos dice que si al menos uno de los movimientos cambia el tablero, el resultado será #t. Si ninguno cambia el tablero, el resultado será #f.
+  )
