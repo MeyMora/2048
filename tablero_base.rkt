@@ -529,3 +529,26 @@
        [else(hay-un-cero-en-fila?(cdr fila))] ;Si no se cumple ninguno de los casos anteriores, se llama recursivamente con el resto de la fila 
        )
   )
+
+
+;Para verificar si en el tablero hay espacios de movimiento o no es la siguiente funcion. 
+; Funcion: hay-espacios?
+; Descripcion: Recorre fila por fila el tablero y verifica si alguna contiene al menos un cero (espacio vacío,  lo cual es clave para saber si todavía se pueden generar nuevas fichas en el juego.).
+;
+; Parametros:
+; tablero: una lista de listas que representa el tablero del juego.
+;
+; Retorna:
+;#t si existe al menos un cero en alguna fila del tablero.
+;#f si no hay ceros en ninguna fila (es decir, el tablero está lleno).
+;   
+; Ejemplo: (hay-espacios? '((2 4 8)(16 0 0)(128 0 0)))
+;
+; Resultado: #t
+(define(hay-espacios? tablero)
+  (cond
+    [(null? tablero) #f] ;Caso base: si el tablero está vacío, no hay filas que revisar.
+    [(hay-un-cero-en-fila?(car tablero))#t] ; Toma la primera fila (car tablero) y usa la función hay-un-cero-en-fila? para verificar si esa fila contiene un cero.
+    [else(hay-espacios? (cdr tablero))] ;Si no se encontró en la primera fila, se llama recursivamente con el resto del tablero (cdr tablero).
+    )
+  )
