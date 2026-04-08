@@ -795,3 +795,28 @@
                     valor) ;Coloca el valor en esa celda
   )
 
+;-----------------------Agregar una Ficha aleatoria al tablero--------------------------------------------------------------------------------
+
+; Funcion: agregar-ficha-aleatoria
+; Descripcion:  Coloca una nueva ficha (2 o 4) en una posición vacía del tablero.
+;
+; Parametros:
+;          tablero: Una lista de listas que representa el tablero del juego.
+; Retorna:
+;         Devuelve un nuevo tablero: Si hay posiciones vacías, el tablero actualizado con una nueva ficha (2 o 4) en una posición aleatoria. Si no hay posiciones vacías, el tablero original sin cambios.
+;   
+; Ejemplo:  (agregar-ficha-aleatoria '((2 0 4)(0 8 16)(32 64 128)))
+;
+; Resultado:'((2 2 4)(0 8 16)(32 64 128))
+
+(define(agregar-ficha-aleatoria tablero)
+  (cond
+    [(null? (posiciones-vacias tablero 0)) tablero] ; Esta función recorre todo el tablero y devuelve una lista con las coordenadas de las celdas vacías (donde hay un 0).
+     ; Si la lista de posiciones vacías es null (es decir, no hay huecos), significa que el tablero está lleno.
+    [else
+     (agregar-ficha-en-posicion
+      tablero
+      (elemento-aleatorio(posiciones-vacias tablero 0)); genera un numero aleatorio si la posicion en el tablero esta vacia
+      (valor-nueva-ficha))]; decide si el valor de la nueva ficha es 2 o 4 
+    )
+  )
