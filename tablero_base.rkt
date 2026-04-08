@@ -355,3 +355,21 @@
            ) ; cons, construye una nueva lista colocando el primer elemento de la primera fila al inicio, seguido de los elementos de la primera columna del resto.
       )
   )
+; Funcion: quitar-primera-columna
+; Descripcion: Elimina el primer elemento de cada fila del tablero.
+;
+; Parametros:
+; tablero : tablero que es una lista de listas (cada sublista representa una fila de un tablero).
+;
+; Retorna:  Un nuevo tablero (lista de listas) donde cada fila ya no tiene su primer elemento.
+;   
+; Ejemplo: (quitar-primera-columna '((1 2 3) (4 5 6) (7 8 9)))
+;
+; Resultado: '((2 3)(5 6)(8 9))
+(define(quitar-primera-columna tablero)
+  (if (null? tablero) '() ;Caso base: si el tablero está vacío, devuelve la lista vacía '().
+      (cons(cdr(car tablero)); (car tablero),toma la primera fila del tablero, devuelve esa fila sin su primer elemento, y el (cdr tablero), nos devuelve el resto del tablero (todas las filas menos la primera).
+           (quitar-primera-columna(cdr tablero))) ;  llamada recursiva para procesar el resto de filas 
+      ) ; (cons ... ...) → construye el nuevo tablero fila por fila, quitando la primera columna.
+  )
+
