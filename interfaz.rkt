@@ -1,5 +1,7 @@
 #lang racket
 (require 2htdp/image)
+(require 2htdp/universe)
+(require "tablero_base.rkt")
 
 ;------------------------------------------------------------
 ; CONSTANTES GLOBALES
@@ -13,19 +15,6 @@
 (define ALTO-TABLERO  (+ (* FILAS TAMANO-CELDA) (* (+ FILAS 1) ESPACIO)))
 (define ALTO-HEADER 90)
 
-;------------------------------------------------------------
-; Funcion: hex->color
-; Descripcion: Convierte un string de color hexadecimal
-;              al formato de color que acepta 2htdp/image.
-;
-; Parametros:
-;   hex: string en formato "#rrggbb"
-;
-; Retorna: objeto color compatible con 2htdp/image
-;
-; Ejemplo: (hex->color "#f2b179")
-; Resultado: (make-color 242 177 121)
-;------------------------------------------------------------
 (define (hex->color hex)
   (make-color
    (string->number (substring hex 1 3) 16)
@@ -106,21 +95,6 @@
     (separador-fila))
    (rectangle ANCHO-TABLERO ALTO-TABLERO "solid" (hex->color "#bbada0"))))
 
-;------------------------------------------------------------
-; Funcion: caja-puntaje
-; Descripcion: Construye la caja visual del puntaje que se
-;              muestra en el header. Contiene la etiqueta
-;              "SCORE" arriba y el valor numerico abajo,
-;              sobre un fondo cafe redondeado.
-;
-; Parametros:
-;   puntaje: numero entero con el puntaje actual del jugador
-;
-; Retorna: imagen de la caja de puntaje lista para mostrar
-;
-; Ejemplo: (caja-puntaje 1024)
-; Resultado: imagen con "SCORE" y "1024" sobre fondo cafe
-;------------------------------------------------------------
 (define (caja-puntaje puntaje)
   (overlay
    (above
@@ -129,21 +103,6 @@
     (text (number->string puntaje) 22 "white"))
    (rectangle 100 58 "solid" (hex->color "#bbada0"))))
 
-;------------------------------------------------------------
-; Funcion: dibujar-header
-; Descripcion: Construye el encabezado del juego con el
-;              titulo "2048" a la izquierda y la caja de
-;              puntaje a la derecha, sobre el fondo crema
-;              del juego.
-;
-; Parametros:
-;   puntaje: numero entero con el puntaje actual del jugador
-;
-; Retorna: imagen del header con titulo y puntaje alineados
-;
-; Ejemplo: (dibujar-header 256)
-; Resultado: imagen de encabezado con "2048" y "256"
-;------------------------------------------------------------
 (define (dibujar-header puntaje)
   (overlay/align
    "left" "middle"
@@ -155,23 +114,6 @@
     (rectangle 14 10 "solid" "transparent"))
    (rectangle ANCHO-TABLERO ALTO-HEADER "solid" (hex->color "#faf8ef"))))
 
-;------------------------------------------------------------
-; Funcion: render
-; Descripcion: Funcion principal de renderizado. Combina
-;              el header y el tablero en una sola imagen
-;              final que representa el estado visual
-;              completo del juego en cada momento.
-;
-; Parametros:
-;   estado: lista de dos elementos:
-;           - primer elemento: tablero (lista de listas 4x4)
-;           - segundo elemento: puntaje (numero entero)
-;
-; Retorna: imagen completa del juego lista para mostrar
-;
-; Ejemplo: (render (list tablero 512))
-; Resultado: imagen con header y tablero combinados
-;------------------------------------------------------------
 (define (render estado)
   (above
    (dibujar-header (cadr estado))
@@ -179,11 +121,54 @@
    (dibujar-tablero (car estado))))
 
 ;------------------------------------------------------------
-; PRUEBAS
+; ESTADO INICIAL
 ;------------------------------------------------------------
 
-; (render (list (list (list 2 0 4 0)
-;                     (list 0 8 0 4)
-;                     (list 2 2 0 0)
-;                     (list 0 0 4 4))
-;               512))
+;------------------------------------------------------------
+; Funcion: tablero-inicial
+; Descripcion: Define el tablero de inicio del juego con
+;              dos fichas colocadas en posiciones fijas.
+;              El juego clasico 2048 siempre empieza con
+;              dos fichas de valor 2 en el tablero.
+;
+; Parametros:
+;   ninguno
+;
+; Retorna: lista de listas 4x4 con dos fichas de valor 2
+;          y el resto en cero
+;
+; Ejemplo: (tablero-inicial)
+; Resultado: ((2 0 0 0)(0 0 0 0)(0 0 0 0)(0 0 2 0))
+;------------------------------------------------------------
+(define (tablero-inicial)
+  (reemplazar-celda
+   (reemplazar-celda
+    (crear-tablero 4 4) 0 0 2)
+   3 2 2))
+
+;------------------------------------------------------------
+; Funcion: estado-inicial
+; Descripcion: Construye el estado inicial completo del
+;              juego, que es una lista con el tablero y
+;              el puntaje en cero. Este estado es el punto
+;              de partida que recibe big-bang.
+;
+; Parametros:
+;   ninguno
+;
+; Retorna: lista de dos elementos (tablero puntaje)
+;          donde tablero es 4x4 y puntaje es 0
+;
+; Ejemplo: (estado-inicial)
+; Resultado: (((2 0 0 0)...(0 0 2 0)) 0)
+;------------------------------------------------------------
+(define (estado-inicial)
+  (list (tablero-inicial) 0))
+
+;------------------------------------------------------------
+; BIG-BANG - punto de entrada del juego
+;------------------------------------------------------------
+
+(big-bang (estado-inicial)
+  (to-draw render)
+  (name "2048"))
