@@ -176,7 +176,7 @@
 (define (juego-terminado estado)
   (cond
     [(tiene-2048 (car estado))              #t]
-    [(null? (celdas-vacias (car estado) 0)) #t]
+    [(perdio? (car estado))                 #t]
     [else                                   #f]))
 
 (define (pantalla-fin estado)
@@ -203,46 +203,85 @@
      [(juego-terminado estado) (pantalla-fin estado)]
      [else                     (dibujar-tablero (car estado))])))
 
-;------------------------------------------------------------
-; Funcion: aplicar-movimiento
-; Descripcion: Aplica un movimiento al tablero y coloca una
-;              nueva ficha solo si el tablero cambio. Usa
-;              tableros-iguales? de tablero_base.rkt para
-;              evitar generar fichas en movimientos invalidos
-;              donde el tablero no cambia en absoluto.
-;
-; Parametros:
-;   tablero:        estado actual del tablero
-;   tablero-movido: resultado de aplicar el movimiento
-;
-; Retorna: tablero con nueva ficha si hubo cambio, o el
-;          tablero-movido sin cambio si no hubo efecto
-;
-; Ejemplo: (aplicar-movimiento t (mover-tablero-izquierda t))
-; Resultado: tablero con o sin ficha nueva segun cambio
-;------------------------------------------------------------
 (define (aplicar-movimiento tablero tablero-movido)
   (cond
     [(tableros-iguales? tablero tablero-movido) tablero-movido]
     [else (colocar-ficha-aleatoria tablero-movido)]))
 
 ;------------------------------------------------------------
-; Funcion: manejar-tecla
-; Descripcion: Maneja todas las teclas del juego. Ahora usa
-;              aplicar-movimiento para que no se genere ficha
-;              nueva cuando el movimiento no hace nada.
-;              R reinicia, las 4 flechas mueven el tablero.
-;              Si el juego termino solo responde a R.
+; Funcion: calcular-puntos-fila
+; Descripcion: Recorre una fila antes y despues del movimiento
+;              y suma los valores de las celdas que se
+;              combinaron. Una combinacion se detecta cuando
+;              una celda del tablero nuevo tiene el doble del
+;              valor de la celda correspondiente del viejo.
 ;
 ; Parametros:
-;   estado: lista (tablero puntaje)
-;   tecla:  string con la tecla presionada
+;   fila-antes:  fila original antes del movimiento
+;   fila-despues: fila resultado del movimiento
 ;
-; Retorna: nuevo estado segun la accion
+; Retorna: numero entero con los puntos ganados en esa fila
 ;
-; Ejemplo: (manejar-tecla estado "left")
-; Resultado: estado con tablero movido a la izquierda
+; Ejemplo: (calcular-puntos-fila '(2 2 0 0) '(4 0 0 0))
+; Resultado: 4
 ;------------------------------------------------------------
+(define (calcular-puntos-fila fila-antes fila-despues)
+  (cond
+    [(or (null? fila-antes) (null? fila-despues)) 0]
+    [(and (not (= (car fila-antes) 0))
+          (= (car fila-despues) (* 2 (car fila-antes))))
+     (+ (car fila-despues)
+        (calcular-puntos-fila (cdr fila-antes) (cdr fila-despues)))]
+    [else
+     (calcular-puntos-fila (cdr fila-antes) (cdr fila-despues))]))
+
+;------------------------------------------------------------
+; Funcion: calcular-puntos
+; Descripcion: Recorre fila por fila los dos tableros y
+;              acumula todos los puntos obtenidos por las
+;              combinaciones ocurridas en el movimiento.
+;
+; Parametros:
+;   tablero-antes:   tablero original antes del movimiento
+;   tablero-despues: tablero resultado del movimiento
+;
+; Retorna: numero entero con el total de puntos del movimiento
+;
+; Ejemplo: (calcular-puntos tablero-antes tablero-despues)
+; Resultado: suma de todos los valores combinados
+;------------------------------------------------------------
+(define (calcular-puntos tablero-antes tablero-despues)
+  (cond
+    [(or (null? tablero-antes) (null? tablero-despues)) 0]
+    [else
+     (+ (calcular-puntos-fila (car tablero-antes) (car tablero-despues))
+        (calcular-puntos (cdr tablero-antes) (cdr tablero-despues)))]))
+
+;------------------------------------------------------------
+; Funcion: aplicar-movimiento-con-puntos
+; Descripcion: Aplica un movimiento, calcula los puntos
+;              obtenidos y devuelve el nuevo estado completo
+;              con el tablero actualizado y el puntaje sumado.
+;              Solo coloca ficha nueva si el tablero cambio.
+;
+; Parametros:
+;   estado:          lista (tablero puntaje) actual
+;   tablero-movido:  tablero resultado del movimiento
+;
+; Retorna: lista (tablero-nuevo puntaje-nuevo) actualizado
+;
+; Ejemplo: (aplicar-movimiento-con-puntos estado t-movido)
+; Resultado: estado con tablero y puntaje actualizados
+;------------------------------------------------------------
+(define (aplicar-movimiento-con-puntos estado tablero-movido)
+  (cond
+    [(tableros-iguales? (car estado) tablero-movido)
+     estado]
+    [else
+     (list (colocar-ficha-aleatoria tablero-movido)
+           (+ (cadr estado)
+              (calcular-puntos (car estado) tablero-movido)))]))
+
 (define (manejar-tecla estado tecla)
   (cond
     [(string=? tecla "r")
@@ -250,26 +289,18 @@
     [(juego-terminado estado)
      estado]
     [(string=? tecla "left")
-     (list (aplicar-movimiento (car estado)
-                               (mover-tablero-izquierda (car estado)))
-           (cadr estado))]
+     (aplicar-movimiento-con-puntos
+      estado (mover-tablero-izquierda (car estado)))]
     [(string=? tecla "right")
-     (list (aplicar-movimiento (car estado)
-                               (mover-tablero-derecha (car estado)))
-           (cadr estado))]
+     (aplicar-movimiento-con-puntos
+      estado (mover-tablero-derecha (car estado)))]
     [(string=? tecla "up")
-     (list (aplicar-movimiento (car estado)
-                               (mover-tablero-arriba (car estado)))
-           (cadr estado))]
+     (aplicar-movimiento-con-puntos
+      estado (mover-tablero-arriba (car estado)))]
     [(string=? tecla "down")
-     (list (aplicar-movimiento (car estado)
-                               (mover-tablero-abajo (car estado)))
-           (cadr estado))]
+     (aplicar-movimiento-con-puntos
+      estado (mover-tablero-abajo (car estado)))]
     [else estado]))
-
-;------------------------------------------------------------
-; BIG-BANG
-;------------------------------------------------------------
 
 (big-bang (estado-inicial)
   (to-draw render)
