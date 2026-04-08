@@ -772,3 +772,26 @@
       2
       4) ;Si el número es igual a 9, devuelve 4.
   )
+;--------------------------Colocar una ficha en una posicion en el tablero---------------------------------------------------------------------------
+
+; Funcion: agregar-ficha-en-posicion
+; Descripcion:  Inserta un nuevo valor (por ejemplo, un 2 o un 4) en una celda específica del tablero.
+;
+; Parametros:
+;          tablero:Una lista de listas que representa el tablero del juego.
+;          posicion:Una lista de dos números: (num-fila num-col). Indica la fila y columna donde se debe colocar la nueva ficha.
+;          valor: El número que se quiere colocar en esa posición (normalmente 2 o 4).
+; Retorna:
+;          Devuelve un nuevo tablero con la celda indicada reemplazada por el valor dado.
+;   
+; Ejemplo:  (agregar-ficha-en-posicion '((2 0 4) (0 8 16) (32 64 128)) '(0 1) 2)
+;
+; Resultado:'((2 2 4)(0 8 16)(32 64 128))
+
+(define (agregar-ficha-en-posicion tablero posicion valor)
+  (reemplazar-celda tablero  ;Usa la función auxiliar reemplazar-celda para modificar el tablero.
+                    (car posicion) ;Extrae la fila con (car posicion) y la columna con (car (cdr posicion)).
+                    (car (cdr posicion))
+                    valor) ;Coloca el valor en esa celda
+  )
+
