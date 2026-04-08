@@ -432,3 +432,30 @@
    (mover-tablero-derecha ; Aplica la función de mover a la derecha sobre esas “filas” (que en realidad son las columnas originales).
     (transponer tablero))) ; Convierte las columnas en filas.
   )
+
+
+
+;-------------------------------------------------Logica para detectar si el jugador gano-----------------------------------------------------
+;Esta funcion nos sirve para mas adelante buscar un valor en todo el tablero
+; Funcion: contiene?
+; Descripcion: Recorre una lista elemento por elemento y verifica si alguno es igual al valor buscado.
+;
+; Parametros:
+; lista: una lista de números (o elementos comparables).
+; valor: el número (o elemento) que queremos buscar dentro de la lista.
+;
+; Retorna:
+;             #t (true) si el valor está en la lista.
+;             #f (false) si no está.
+;   
+; Ejemplo: (contiene? '(1 2 3 4 5) 5)
+;
+; Resultado: #t
+
+(define(contiene? lista valor)
+  (cond
+    [(null? lista) #f] ; Caso base: si la lista está vacía (null?), significa que ya no hay elementos que revisar.
+    [(= (car lista)valor) #t] ;Si el primer elemento de la lista (car lista) es igual al valor buscado, retorna #t.
+    [else(contiene?(cdr lista) valor)] ; Si no se cumple ninguno de los casos anteriores, se llama recursivamente a la función con el resto de la lista (cdr lista) y se sigue buscando.
+    )
+  )
