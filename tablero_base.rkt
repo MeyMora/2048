@@ -749,3 +749,26 @@
    lista(random(mi-length lista))) ; Calcula la longitud de la lista con mi-length, y genera un número aleatorio entre 0 y (mi-length lista - 1) usando random.
   ) ;Usa ese número como índice para obtener el elemento correspondiente con elemento-lista.
 
+;------------------Elegir el valor de una nueva ficha----------------------------------------------------
+
+; Funcion: valor-nueva-ficha
+; Descripcion: Decide si la nueva ficha será un 2 o un 4.
+;
+; Parametros:
+;             Esta función no recibe parámetros.
+;
+; Retorna:
+;    Devuelve un número: 2 en la mayoría de los casos y devuelve 4 ocasionalmente.
+;   
+; Ejemplo:  (valor-nueva-ficha)
+;
+; Resultado: 4
+;            2 
+;            2
+
+
+(define (valor-nueva-ficha)
+  (if (<(random 10) 9) ;Genera un número aleatorio entre 0 y 9 con (random 10), y si ese número es menor que 9 (es decir, 0–8), devuelve 2.
+      2
+      4) ;Si el número es igual a 9, devuelve 4.
+  )
