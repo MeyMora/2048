@@ -15,15 +15,6 @@
 (define ALTO-TABLERO  (+ (* FILAS TAMANO-CELDA) (* (+ FILAS 1) ESPACIO)))
 (define ALTO-HEADER 90)
 
-;------------------------------------------------------------
-; FUNCIONES AUXILIARES
-;------------------------------------------------------------
-
-(define (mi-length lista)
-  (cond
-    [(null? lista) 0]
-    [else (+ 1 (mi-length (cdr lista)))]))
-
 (define (hex->color hex)
   (make-color
    (string->number (substring hex 1 3) 16)
@@ -123,25 +114,6 @@
     (rectangle 14 10 "solid" "transparent"))
    (rectangle ANCHO-TABLERO ALTO-HEADER "solid" (hex->color "#faf8ef"))))
 
-(define (render estado)
-  (above
-   (dibujar-header (cadr estado))
-   (rectangle ANCHO-TABLERO ESPACIO "solid" (hex->color "#faf8ef"))
-   (dibujar-tablero (car estado))))
-
-;------------------------------------------------------------
-; LOGICA DEL JUEGO
-;------------------------------------------------------------
-
-(define (tablero-inicial)
-  (reemplazar-celda
-   (reemplazar-celda
-    (crear-tablero 4 4) 0 0 2)
-   3 2 2))
-
-(define (estado-inicial)
-  (list (tablero-inicial) 0))
-
 (define (mi-list-ref lista indice)
   (cond
     [(= indice 0) (car lista)]
@@ -165,26 +137,167 @@
       (celdas-vacias (cdr tablero) (+ fila-i 1)))]))
 
 (define (valor-nueva-ficha)
-  (if (< (random 10) 9) 2 4))
+  (cond
+    [(< (random 10) 9) 2]
+    [else              4]))
 
 (define (colocar-ficha-aleatoria tablero)
   (cond
     [(null? (celdas-vacias tablero 0)) tablero]
     [else
-     (let* ([vacias (celdas-vacias tablero 0)]
-            [pos (mi-list-ref vacias (random (mi-length vacias)))])
-       (reemplazar-celda
-        tablero
-        (car pos)
-        (cadr pos)
-        (valor-nueva-ficha)))]))
+     (reemplazar-celda
+      tablero
+      (car  (mi-list-ref (celdas-vacias tablero 0)
+                         (random (mi-length (celdas-vacias tablero 0)))))
+      (cadr (mi-list-ref (celdas-vacias tablero 0)
+                         (random (mi-length (celdas-vacias tablero 0)))))
+      (valor-nueva-ficha))]))
+
+(define (tablero-inicial)
+  (colocar-ficha-aleatoria
+   (colocar-ficha-aleatoria
+    (crear-tablero 4 4))))
+
+(define (estado-inicial)
+  (list (tablero-inicial) 0))
 
 ;------------------------------------------------------------
-; MANEJO DE TECLAS (CORREGIDO)
+; Funcion: tiene-2048-fila
+; Descripcion: Verifica si alguna celda de una fila
+;              contiene el valor 2048, que representa
+;              la condicion de victoria del juego.
+;
+; Parametros:
+;   fila: lista de numeros de una fila del tablero
+;
+; Retorna: #t si alguna celda tiene 2048, #f en caso contrario
+;
+; Ejemplo: (tiene-2048-fila '(512 1024 2048 256))
+; Resultado: #t
 ;------------------------------------------------------------
+(define (tiene-2048-fila fila)
+  (cond
+    [(null? fila)          #f]
+    [(= (car fila) 2048)   #t]
+    [else (tiene-2048-fila (cdr fila))]))
 
+;------------------------------------------------------------
+; Funcion: tiene-2048
+; Descripcion: Verifica si algun valor del tablero completo
+;              es 2048, lo que indica que el jugador gano.
+;              Recorre todas las filas recursivamente.
+;
+; Parametros:
+;   tablero: lista de listas 4x4 con el estado del tablero
+;
+; Retorna: #t si existe un 2048 en el tablero, #f si no
+;
+; Ejemplo: (tiene-2048 tablero)
+; Resultado: #t o #f segun el estado del tablero
+;------------------------------------------------------------
+(define (tiene-2048 tablero)
+  (cond
+    [(null? tablero) #f]
+    [(tiene-2048-fila (car tablero)) #t]
+    [else (tiene-2048 (cdr tablero))]))
+
+;------------------------------------------------------------
+; Funcion: juego-terminado
+; Descripcion: Determina si el juego llego a su fin, ya sea
+;              porque el jugador gano (hay una ficha 2048) o
+;              porque el tablero esta lleno y no hay mas
+;              movimientos disponibles (no hay celdas vacias).
+;
+; Parametros:
+;   estado: lista (tablero puntaje) con el estado actual
+;
+; Retorna: #t si el juego termino, #f si puede continuar
+;
+; Ejemplo: (juego-terminado estado)
+; Resultado: #t si gano o si no hay mas movimientos
+;------------------------------------------------------------
+(define (juego-terminado estado)
+  (cond
+    [(tiene-2048 (car estado))                    #t]
+    [(null? (celdas-vacias (car estado) 0))       #t]
+    [else                                         #f]))
+
+;------------------------------------------------------------
+; Funcion: pantalla-fin
+; Descripcion: Dibuja la pantalla de fin de juego encima
+;              del tablero. Muestra un mensaje diferente
+;              segun si el jugador gano o perdio.
+;              Superpone un fondo semitransparente sobre
+;              el tablero para destacar el mensaje.
+;
+; Parametros:
+;   estado: lista (tablero puntaje) con el estado final
+;
+; Retorna: imagen con el tablero y el mensaje de fin encima
+;
+; Ejemplo: (pantalla-fin estado-ganador)
+; Resultado: imagen con tablero y mensaje "!Ganaste!"
+;------------------------------------------------------------
+(define (pantalla-fin estado)
+  (overlay
+   (above
+    (text (cond
+            [(tiene-2048 (car estado)) "¡Ganaste!"]
+            [else                      "Game Over"])
+          44
+          (cond
+            [(tiene-2048 (car estado)) (hex->color "#776e65")]
+            [else                      (hex->color "#f9f6f2")]))
+    (rectangle 1 12 "solid" "transparent")
+    (text "Presiona R para reiniciar" 18 (hex->color "#776e65")))
+   (rectangle ANCHO-TABLERO ALTO-TABLERO "solid"
+              (make-color 237 224 200 190))
+   (dibujar-tablero (car estado))))
+
+;------------------------------------------------------------
+; Funcion: render
+; Descripcion: Funcion principal de renderizado. Si el juego
+;              termino muestra la pantalla de fin, si no
+;              muestra el header y el tablero normales.
+;
+; Parametros:
+;   estado: lista (tablero puntaje) con el estado actual
+;
+; Retorna: imagen completa del estado actual del juego
+;
+; Ejemplo: (render estado)
+; Resultado: imagen del juego o pantalla de fin
+;------------------------------------------------------------
+(define (render estado)
+  (above
+   (dibujar-header (cadr estado))
+   (rectangle ANCHO-TABLERO ESPACIO "solid" (hex->color "#faf8ef"))
+   (cond
+     [(juego-terminado estado) (pantalla-fin estado)]
+     [else                     (dibujar-tablero (car estado))])))
+
+;------------------------------------------------------------
+; Funcion: manejar-tecla
+; Descripcion: Maneja todas las teclas del juego. Las flechas
+;              izquierda y derecha mueven el tablero. La tecla
+;              R reinicia el juego desde cero. Si el juego
+;              ya termino, solo responde a R.
+;
+; Parametros:
+;   estado: lista (tablero puntaje) con el estado actual
+;   tecla:  string con la tecla presionada
+;
+; Retorna: nuevo estado segun la accion de la tecla
+;
+; Ejemplo: (manejar-tecla estado "r")
+; Resultado: estado inicial nuevo
+;------------------------------------------------------------
 (define (manejar-tecla estado tecla)
   (cond
+    [(string=? tecla "r")
+     (estado-inicial)]
+    [(juego-terminado estado)
+     estado]
     [(string=? tecla "left")
      (list (colocar-ficha-aleatoria
             (mover-tablero-izquierda (car estado)))
@@ -196,10 +309,10 @@
     [else estado]))
 
 ;------------------------------------------------------------
-; BIG-BANG
+; BIG-BANG - punto de entrada del juego
 ;------------------------------------------------------------
 
 (big-bang (estado-inicial)
   (to-draw render)
-  (on-key manejar-tecla)
-  (name "2048"))
+  (on-key  manejar-tecla)
+  (name    "2048"))
