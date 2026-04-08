@@ -373,3 +373,26 @@
       ) ; (cons ... ...) → construye el nuevo tablero fila por fila, quitando la primera columna.
   )
 
+;Como ya tenemos las funciones auxiliares ya podemos hacer la transpuesta
+
+;La idea de la transpuesta es si ya no hay columnas, terminar, si no, se toma la primera columna y se sigue con el resto
+
+; Funcion: transponer
+; Descripcion: Devuelve la matriz transpuesta del tablero. Es decir, convierte las filas en columnas.
+;
+; Parametros:
+; tablero : una lista de listas (cada sublista es una fila).
+;
+; Retorna: Devuelve una nueva lista de listas, que corresponde al tablero transpuesto.
+;   
+; Ejemplo: (transponer '((1 2 3) (4 5 6) (7 8 9)))
+;
+; Resultado: '((1 4 7 )(2 5 8)(3 6 9))
+(define(transponer tablero)
+  (if (null? (car tablero))'() ;Caso base: si la primera fila está vacía ((car tablero) es ()), significa que ya no quedan columnas por procesar.
+      (cons ; construye la nueva matriz columna por columna.
+       (primera-columna tablero); obtiene la primera columna del tablero.
+           (transponer ; llamada recursiva para transponer el resto del tablero.
+            (quitar-primera-columna tablero))) ; devuelve el tablero sin la primera columna.
+      )
+  )
