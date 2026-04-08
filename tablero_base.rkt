@@ -635,3 +635,27 @@
       (not (tableros-iguales? tablero (mover-tablero-abajo tablero)))  ;se mueve el tablero hacia abajo y se verifica si hubo un cambio
       ) ;El or nos dice que si al menos uno de los movimientos cambia el tablero, el resultado será #t. Si ninguno cambia el tablero, el resultado será #f.
   )
+
+
+
+;-------------------------Funcion perdio el juego--------------------------------------------------------------------
+
+
+; Funcion: perdio? 
+; Descripcion: Detecta si el jugador ha perdido la partida.
+;
+; Parametros:
+;         tablero: Una lista de listas que representa el tablero del juego.
+;
+; Retorna:
+;    #t (true): si el tablero está lleno y no hay movimientos posibles → el jugador perdió.
+;    #f (false): si todavía hay espacios vacíos o algún movimiento válido → el juego continúa.
+;   
+; Ejemplo: (perdio? '((2 4 2 4)(4 2 4 2)(2 4 2 4)(4 2 4 2)))
+;
+; Resultado: #t
+(define(perdio? tablero)
+  (and(not(hay-espacios? tablero)) ;Verifica si no hay espacios vacíos en el tablero (not (hay-espacios? tablero)).
+      (not(hay-movimientos? tablero)) ;Verifica si no hay movimientos posibles (not (hay-movimientos? tablero)).
+      ); si las dos cosas pasan, entonces se pierde el juego
+  )
