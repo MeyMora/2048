@@ -9,7 +9,12 @@
  quitar-ceros
  combinar-fila
  mover-tablero-izquierda
- mover-tablero-derecha)
+ mover-tablero-derecha
+ gano?
+ perdio?
+ tableros-iguales?
+ mover-tablero-arriba
+ mover-tablero-abajo)
 
 
 ;------------------------------------------------------------
