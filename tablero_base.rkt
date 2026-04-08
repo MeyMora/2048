@@ -459,3 +459,28 @@
     [else(contiene?(cdr lista) valor)] ; Si no se cumple ninguno de los casos anteriores, se llama recursivamente a la función con el resto de la lista (cdr lista) y se sigue buscando.
     )
   )
+
+
+; Funcion: tablero-contiene?
+; Descripcion: Recorre fila por fila el tablero y usa la función contiene? para verificar si el valor está presente en alguna de ellas.
+;
+; Parametros:
+; tablero: una lista de listas (cada sublista es una fila del tablero).
+; valor: el número que queremos buscar en el tablero.
+;
+; Retorna:
+;             #t (true) si el valor aparece en alguna fila del tablero 
+;             #f (false) si no aparece en ninguna
+;   
+; Ejemplo: (contiene? '(1 2 3 4 5) 5)
+;
+; Resultado: #t
+(define(tablero-contiene? tablero valor)
+
+  (cond
+    [(null? tablero) #f]; Caso base: si el tablero está vacío, no hay nada que buscar.
+    [(contiene? (car tablero) valor) #t] ; Toma la primera fila del tablero (car tablero) y usa contiene? para verificar si esa fila contiene el valor.
+    [else (tablero-contiene? (cdr tablero) valor)] ; Si no lo encontró en la primera fila, llama recursivamente a tablero-contiene? con el resto del tablero (cdr tablero).
+    ) ; Y así sigue buscando fila por fila.
+  )
+
