@@ -335,3 +335,23 @@
            (mover-tablero-derecha (cdr tablero))); cdr tablero , quiere decir que luego agarramos el resto de las filas y luego llamamos recursivamente a la función para procesar las demás filas.
       )
   )
+;-----------------------Transpuesta del tablero -----------------------------------------------------
+
+; Funcion: primera-columna
+; Descripcion:  Extrae el primer elemento de cada fila del tablero, construyendo una nueva lista con esos elementos.
+;
+; Parametros:
+; tablero : Se espera que sea una lista de listas (por ejemplo, una matriz representada como lista de filas).
+;
+; Retorna: Una lista que contiene la primera columna del tablero.
+;   
+; Ejemplo: (primera-columna '((2 4 8) (0 4 2) (2 0 2)))
+;
+; Resultado: '(2 0 2)
+(define(primera-columna tablero)
+  (if (null? tablero) '()   ;Si tablero está vacío, devuelve la lista vacía '().
+      (cons(car(car tablero)) ; se toma la primera fila del tablero, luego se toma el primer elemento de esa fila (es decir, el elemento de la primera columna).
+           (primera-columna (cdr tablero)) ;luego el resto del tablero (todas las filas menos la primera),  llamada recursiva para obtener la primera columna del resto del tablero
+           ) ; cons, construye una nueva lista colocando el primer elemento de la primera fila al inicio, seguido de los elementos de la primera columna del resto.
+      )
+  )
