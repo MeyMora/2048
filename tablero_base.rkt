@@ -7,7 +7,9 @@
  reemplazar-en-lista
  reemplazar-celda
  quitar-ceros
- combinar-fila)
+ combinar-fila
+ mover-tablero-izquierda
+ mover-tablero-derecha)
 
 
 ;------------------------------------------------------------
