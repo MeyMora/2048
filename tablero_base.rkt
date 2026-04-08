@@ -552,3 +552,31 @@
     [else(hay-espacios? (cdr tablero))] ;Si no se encontró en la primera fila, se llama recursivamente con el resto del tablero (cdr tablero).
     )
   )
+;----------------------------------------------Para verificar si un movimiento realmente hizo algo-------------------------------------------------------------------------------
+
+;-----Comparamos si dos tableros son iguales----------
+;Sirve para saber si un movimiento hizo algo, pues si se hace un movimiento a la izquierda y el tablero queda igual porque ya no hay movimiento a la izquierda, entonces no debe generarse una ficha nueva
+
+; Funcion: listas-iguales?
+; Descripcion: Compara dos listas elemento por elemento.
+;
+; Parametros:
+; lista1: primera lista a comparar.
+; lista2: segunda lista a comparar.
+;
+; Retorna:
+; #t si ambas listas son iguales en longitud y en todos sus elementos.
+; #f si difieren en tamaño o en algún elemento.
+;   
+; Ejemplo: (listas-iguales? '(1 2 3) '(1 2 3))
+;
+; Resultado: #t
+(define(listas-iguales? lista1 lista2)
+  (cond
+    [(and(null? lista1)(null? lista2)) #t] ;Caso base: si ambas listas están vacías, son iguales.
+    [(or (null? lista1)(null? lista2))#f] ;Si una lista está vacía y la otra no, no pueden ser iguales.
+    [(=(car lista1)(car lista2)) ;Si los primeros elementos son iguales, se compara recursivamente el resto de las listas.
+     (listas-iguales? (cdr lista1)(cdr lista2))]
+    [else #f] ;Si los primeros elementos no son iguales, devuelve #f.
+    )
+  )
