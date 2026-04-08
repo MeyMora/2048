@@ -504,3 +504,28 @@
 (define(gano? tablero)
   (tablero-contiene? tablero 2048) ; Llama a la función tablero-contiene? para revisar si el número 2048 aparece en alguna posición del tablero.
   )
+
+
+;-------------------------------Detectar si hay espacios vacios para seguir jugando----------------------------------------------------------------------------
+
+
+; Funcion: hay-un-cero-en-fila?
+; Descripcion: Recorre la fila elemento por elemento y verifica si alguno es igual a cero.
+;
+; Parametros:
+; fila: una lista de números que representa una fila del tablero.
+;
+; Retorna:
+; #t si la fila contiene al menos un cero.
+; #f si no contiene ningún cero.
+;   
+; Ejemplo: (hay-un-cero-en-fila? '(1 2 3 5 6 0 0))
+;
+; Resultado: #t
+(define(hay-un-cero-en-fila? fila)
+  (cond
+       [(null? fila) #f] ; Caso base: si la fila está vacía, no hay elementos que revisar.
+       [(=(car fila) 0)#t] ;Si el primer elemento de la fila (car fila) es igual a 0, devuelve #t.
+       [else(hay-un-cero-en-fila?(cdr fila))] ;Si no se cumple ninguno de los casos anteriores, se llama recursivamente con el resto de la fila 
+       )
+  )
