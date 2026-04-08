@@ -414,3 +414,21 @@
    (mover-tablero-izquierda ; Aplica la función de mover a la izquierda sobre esas “filas” (que en realidad son las columnas originales).
     (transponer tablero))) ;Convierte las columnas en filas.
   )
+;----------------------------Movimiento abajo en el tablero---------------------------------------------------------------------------------------------
+; Funcion: mover-tablero-abajo
+; Descripcion: Mueve todas las columnas del tablero hacia abajo, combinando números iguales según las reglas del juego (como en 2048).
+;
+; Parametros:
+; Parámetro: tablero que es una lista de listas que representa el tablero del juego (cada sublista es una fila).
+;
+; Retorna: Un nuevo tablero con los valores desplazados hacia abajo.
+;   
+; Ejemplo: (mover-tablero-abajo '((4 2 0 )(4 2 0)(0 0 0)))
+;
+; Resultado: '((0 0 0) (0 0 0) (8 4 0))
+
+(define(mover-tablero-abajo tablero)
+  (transponer ; Se vuelve a transponer el resultado para restaurar la orientación original del tablero.
+   (mover-tablero-derecha ; Aplica la función de mover a la derecha sobre esas “filas” (que en realidad son las columnas originales).
+    (transponer tablero))) ; Convierte las columnas en filas.
+  )
