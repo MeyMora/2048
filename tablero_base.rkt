@@ -580,3 +580,29 @@
     [else #f] ;Si los primeros elementos no son iguales, devuelve #f.
     )
   )
+
+
+; Funcion: tableros-iguales? 
+; Descripcion: compara ambos tableros fila por fila usando la función listas-iguales?.
+;
+; Parametros:
+;        tablero1: primer tablero (lista de listas).
+;        tablero2: segundo tablero (lista de listas).
+;
+; Retorna:
+;    #t si ambos tableros son idénticos en tamaño y contenido.
+;    #f si difieren en alguna fila o longitud.
+;   
+; Ejemplo: (tableros-iguales? '((1 2 3)(4 5 6)(7 8 9)) '((1 2 3)(4 5 6)(7 8 9)))
+;
+; Resultado: #t
+;Usando la funcion auxiliar listas-iguales podemos comparar si dos tableros son iguales
+(define(tableros-iguales? tablero1 tablero2)
+  (cond
+    [(and(null? tablero1)(null? tablero2)) #t] ; Caso base: ambas listas vacías
+    [(or(null? tablero1)(null? tablero2))#f] ; Caso: un tablero esta vacío y el otro no
+    [(listas-iguales? (car tablero1)(car tablero2)) ; Se toma la primera fila de cada tablero, se comparan con la función listas-iguales?
+     (tableros-iguales? (cdr tablero1)(cdr tablero2))] ; Si son iguales, se pasa a comparar el resto de las filas (cdr tablero1 y cdr tablero2) recursivamente.
+    [else #f] ;Si las primeras filas difieren, no hace falta seguir comparando.
+    )
+  )
