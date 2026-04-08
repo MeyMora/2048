@@ -15,6 +15,15 @@
 (define ALTO-TABLERO  (+ (* FILAS TAMANO-CELDA) (* (+ FILAS 1) ESPACIO)))
 (define ALTO-HEADER 90)
 
+;------------------------------------------------------------
+; FUNCIONES AUXILIARES
+;------------------------------------------------------------
+
+(define (mi-length lista)
+  (cond
+    [(null? lista) 0]
+    [else (+ 1 (mi-length (cdr lista)))]))
+
 (define (hex->color hex)
   (make-color
    (string->number (substring hex 1 3) 16)
@@ -120,6 +129,10 @@
    (rectangle ANCHO-TABLERO ESPACIO "solid" (hex->color "#faf8ef"))
    (dibujar-tablero (car estado))))
 
+;------------------------------------------------------------
+; LOGICA DEL JUEGO
+;------------------------------------------------------------
+
 (define (tablero-inicial)
   (reemplazar-celda
    (reemplazar-celda
@@ -129,38 +142,64 @@
 (define (estado-inicial)
   (list (tablero-inicial) 0))
 
+(define (mi-list-ref lista indice)
+  (cond
+    [(= indice 0) (car lista)]
+    [else         (mi-list-ref (cdr lista) (- indice 1))]))
+
+(define (celdas-vacias-fila fila fila-i col-i)
+  (cond
+    [(null? fila) '()]
+    [(= (car fila) 0)
+     (cons (list fila-i col-i)
+           (celdas-vacias-fila (cdr fila) fila-i (+ col-i 1)))]
+    [else
+     (celdas-vacias-fila (cdr fila) fila-i (+ col-i 1))]))
+
+(define (celdas-vacias tablero fila-i)
+  (cond
+    [(null? tablero) '()]
+    [else
+     (append
+      (celdas-vacias-fila (car tablero) fila-i 0)
+      (celdas-vacias (cdr tablero) (+ fila-i 1)))]))
+
+(define (valor-nueva-ficha)
+  (if (< (random 10) 9) 2 4))
+
+(define (colocar-ficha-aleatoria tablero)
+  (cond
+    [(null? (celdas-vacias tablero 0)) tablero]
+    [else
+     (let* ([vacias (celdas-vacias tablero 0)]
+            [pos (mi-list-ref vacias (random (mi-length vacias)))])
+       (reemplazar-celda
+        tablero
+        (car pos)
+        (cadr pos)
+        (valor-nueva-ficha)))]))
+
 ;------------------------------------------------------------
-; Funcion: manejar-tecla
-; Descripcion: Recibe el estado actual y una tecla presionada
-;              y devuelve el nuevo estado con el tablero
-;              movido en la direccion indicada. Solo responde
-;              a las cuatro flechas del teclado. Cualquier
-;              otra tecla devuelve el estado sin cambios.
-;
-; Parametros:
-;   estado: lista (tablero puntaje) con el estado actual
-;   tecla:  string con el nombre de la tecla presionada
-;           ("left", "right", "up", "down")
-;
-; Retorna: lista (tablero puntaje) con el tablero actualizado
-;          segun la direccion de la flecha presionada
-;
-; Ejemplo: (manejar-tecla estado "left")
-; Resultado: estado con tablero movido a la izquierda
+; MANEJO DE TECLAS (CORREGIDO)
 ;------------------------------------------------------------
+
 (define (manejar-tecla estado tecla)
   (cond
     [(string=? tecla "left")
-     (list (mover-tablero-izquierda (car estado)) (cadr estado))]
+     (list (colocar-ficha-aleatoria
+            (mover-tablero-izquierda (car estado)))
+           (cadr estado))]
     [(string=? tecla "right")
-     (list (mover-tablero-derecha (car estado)) (cadr estado))]
+     (list (colocar-ficha-aleatoria
+            (mover-tablero-derecha (car estado)))
+           (cadr estado))]
     [else estado]))
 
 ;------------------------------------------------------------
 ; BIG-BANG
-;-----------------------------------------------------------
+;------------------------------------------------------------
 
 (big-bang (estado-inicial)
   (to-draw render)
-  (on-key  manejar-tecla)
+  (on-key manejar-tecla)
   (name "2048"))
