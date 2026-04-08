@@ -664,3 +664,36 @@
       (not(hay-movimientos? tablero)) ;Verifica si no hay movimientos posibles (not (hay-movimientos? tablero)).
       ); si las dos cosas pasan, entonces se pierde el juego
   )
+
+
+
+;--------------------------------------------- Para agregar una nueva ficha aleatoria--------------------------------------------------------------
+; Para agregar una ficha hay que verificar 3 cosas primero, si hay casillas vacias, elegir una al azar, colocar un 2 o un 4
+
+
+; Funcion: posiciones-vacias
+; Descripcion: Recorre una fila del tablero y devuelve una lista con las coordenadas de todas las posiciones vacías (donde el valor es 0).
+;
+; Parametros:
+;             fila: una lista de números que representa una fila del tablero.
+;             num-fila: el índice de la fila actual (para saber en qué fila está el cero).
+;             num-col: el índice de la columna actual (para saber en qué columna está el cero).
+;
+; Retorna:
+;    Una lista de coordenadas (num-fila num-col) correspondientes a las posiciones vacías en esa fila.
+;   
+; Ejemplo: (posiciones-vacias-fila '(2 0 4 0) 1 0)
+;
+; Resultado:'((1 1) (1 3))
+
+(define(posiciones-vacias-fila fila num-fila num-col)
+  (cond
+    [(null? fila)'()] ;Si la fila está vacía, significa que ya no hay más elementos que revisar.
+    [(= (car fila)0) ; Se revisa el primer elemento de la fila (car fila). Si es igual a 0, significa que esa posición está vacía.
+     (cons(list num-fila num-col) ; Se construye una lista con las coordenadas (num-fila num-col).
+          (posiciones-vacias-fila(cdr fila) num-fila (+ num-col 1 )))] ; se llama recursivamente a la función con el resto de la fila (cdr fila), manteniendo el mismo número de fila y aumentando el número de columna en 1.
+    [else
+     (posiciones-vacias-fila(cdr fila) num-fila (+ num-col 1))] ;Si el primer elemento no es cero, se ignora
+                      ; y se llama recursivamente a la función con el resto de la fila (cdr fila), manteniendo el mismo número de fila y aumentando el número de columna en 1.
+    )
+  )
