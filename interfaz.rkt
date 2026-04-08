@@ -161,83 +161,24 @@
 (define (estado-inicial)
   (list (tablero-inicial) 0))
 
-;------------------------------------------------------------
-; Funcion: tiene-2048-fila
-; Descripcion: Verifica si alguna celda de una fila
-;              contiene el valor 2048, que representa
-;              la condicion de victoria del juego.
-;
-; Parametros:
-;   fila: lista de numeros de una fila del tablero
-;
-; Retorna: #t si alguna celda tiene 2048, #f en caso contrario
-;
-; Ejemplo: (tiene-2048-fila '(512 1024 2048 256))
-; Resultado: #t
-;------------------------------------------------------------
 (define (tiene-2048-fila fila)
   (cond
-    [(null? fila)          #f]
-    [(= (car fila) 2048)   #t]
+    [(null? fila)        #f]
+    [(= (car fila) 2048) #t]
     [else (tiene-2048-fila (cdr fila))]))
 
-;------------------------------------------------------------
-; Funcion: tiene-2048
-; Descripcion: Verifica si algun valor del tablero completo
-;              es 2048, lo que indica que el jugador gano.
-;              Recorre todas las filas recursivamente.
-;
-; Parametros:
-;   tablero: lista de listas 4x4 con el estado del tablero
-;
-; Retorna: #t si existe un 2048 en el tablero, #f si no
-;
-; Ejemplo: (tiene-2048 tablero)
-; Resultado: #t o #f segun el estado del tablero
-;------------------------------------------------------------
 (define (tiene-2048 tablero)
   (cond
     [(null? tablero) #f]
     [(tiene-2048-fila (car tablero)) #t]
     [else (tiene-2048 (cdr tablero))]))
 
-;------------------------------------------------------------
-; Funcion: juego-terminado
-; Descripcion: Determina si el juego llego a su fin, ya sea
-;              porque el jugador gano (hay una ficha 2048) o
-;              porque el tablero esta lleno y no hay mas
-;              movimientos disponibles (no hay celdas vacias).
-;
-; Parametros:
-;   estado: lista (tablero puntaje) con el estado actual
-;
-; Retorna: #t si el juego termino, #f si puede continuar
-;
-; Ejemplo: (juego-terminado estado)
-; Resultado: #t si gano o si no hay mas movimientos
-;------------------------------------------------------------
 (define (juego-terminado estado)
   (cond
-    [(tiene-2048 (car estado))                    #t]
-    [(null? (celdas-vacias (car estado) 0))       #t]
-    [else                                         #f]))
+    [(tiene-2048 (car estado))              #t]
+    [(null? (celdas-vacias (car estado) 0)) #t]
+    [else                                   #f]))
 
-;------------------------------------------------------------
-; Funcion: pantalla-fin
-; Descripcion: Dibuja la pantalla de fin de juego encima
-;              del tablero. Muestra un mensaje diferente
-;              segun si el jugador gano o perdio.
-;              Superpone un fondo semitransparente sobre
-;              el tablero para destacar el mensaje.
-;
-; Parametros:
-;   estado: lista (tablero puntaje) con el estado final
-;
-; Retorna: imagen con el tablero y el mensaje de fin encima
-;
-; Ejemplo: (pantalla-fin estado-ganador)
-; Resultado: imagen con tablero y mensaje "!Ganaste!"
-;------------------------------------------------------------
 (define (pantalla-fin estado)
   (overlay
    (above
@@ -254,20 +195,6 @@
               (make-color 237 224 200 190))
    (dibujar-tablero (car estado))))
 
-;------------------------------------------------------------
-; Funcion: render
-; Descripcion: Funcion principal de renderizado. Si el juego
-;              termino muestra la pantalla de fin, si no
-;              muestra el header y el tablero normales.
-;
-; Parametros:
-;   estado: lista (tablero puntaje) con el estado actual
-;
-; Retorna: imagen completa del estado actual del juego
-;
-; Ejemplo: (render estado)
-; Resultado: imagen del juego o pantalla de fin
-;------------------------------------------------------------
 (define (render estado)
   (above
    (dibujar-header (cadr estado))
@@ -277,20 +204,44 @@
      [else                     (dibujar-tablero (car estado))])))
 
 ;------------------------------------------------------------
-; Funcion: manejar-tecla
-; Descripcion: Maneja todas las teclas del juego. Las flechas
-;              izquierda y derecha mueven el tablero. La tecla
-;              R reinicia el juego desde cero. Si el juego
-;              ya termino, solo responde a R.
+; Funcion: aplicar-movimiento
+; Descripcion: Aplica un movimiento al tablero y coloca una
+;              nueva ficha solo si el tablero cambio. Usa
+;              tableros-iguales? de tablero_base.rkt para
+;              evitar generar fichas en movimientos invalidos
+;              donde el tablero no cambia en absoluto.
 ;
 ; Parametros:
-;   estado: lista (tablero puntaje) con el estado actual
+;   tablero:        estado actual del tablero
+;   tablero-movido: resultado de aplicar el movimiento
+;
+; Retorna: tablero con nueva ficha si hubo cambio, o el
+;          tablero-movido sin cambio si no hubo efecto
+;
+; Ejemplo: (aplicar-movimiento t (mover-tablero-izquierda t))
+; Resultado: tablero con o sin ficha nueva segun cambio
+;------------------------------------------------------------
+(define (aplicar-movimiento tablero tablero-movido)
+  (cond
+    [(tableros-iguales? tablero tablero-movido) tablero-movido]
+    [else (colocar-ficha-aleatoria tablero-movido)]))
+
+;------------------------------------------------------------
+; Funcion: manejar-tecla
+; Descripcion: Maneja todas las teclas del juego. Ahora usa
+;              aplicar-movimiento para que no se genere ficha
+;              nueva cuando el movimiento no hace nada.
+;              R reinicia, las 4 flechas mueven el tablero.
+;              Si el juego termino solo responde a R.
+;
+; Parametros:
+;   estado: lista (tablero puntaje)
 ;   tecla:  string con la tecla presionada
 ;
-; Retorna: nuevo estado segun la accion de la tecla
+; Retorna: nuevo estado segun la accion
 ;
-; Ejemplo: (manejar-tecla estado "r")
-; Resultado: estado inicial nuevo
+; Ejemplo: (manejar-tecla estado "left")
+; Resultado: estado con tablero movido a la izquierda
 ;------------------------------------------------------------
 (define (manejar-tecla estado tecla)
   (cond
@@ -299,17 +250,25 @@
     [(juego-terminado estado)
      estado]
     [(string=? tecla "left")
-     (list (colocar-ficha-aleatoria
-            (mover-tablero-izquierda (car estado)))
+     (list (aplicar-movimiento (car estado)
+                               (mover-tablero-izquierda (car estado)))
            (cadr estado))]
     [(string=? tecla "right")
-     (list (colocar-ficha-aleatoria
-            (mover-tablero-derecha (car estado)))
+     (list (aplicar-movimiento (car estado)
+                               (mover-tablero-derecha (car estado)))
+           (cadr estado))]
+    [(string=? tecla "up")
+     (list (aplicar-movimiento (car estado)
+                               (mover-tablero-arriba (car estado)))
+           (cadr estado))]
+    [(string=? tecla "down")
+     (list (aplicar-movimiento (car estado)
+                               (mover-tablero-abajo (car estado)))
            (cadr estado))]
     [else estado]))
 
 ;------------------------------------------------------------
-; BIG-BANG - punto de entrada del juego
+; BIG-BANG
 ;------------------------------------------------------------
 
 (big-bang (estado-inicial)
