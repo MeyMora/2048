@@ -120,55 +120,47 @@
    (rectangle ANCHO-TABLERO ESPACIO "solid" (hex->color "#faf8ef"))
    (dibujar-tablero (car estado))))
 
-;------------------------------------------------------------
-; ESTADO INICIAL
-;------------------------------------------------------------
-
-;------------------------------------------------------------
-; Funcion: tablero-inicial
-; Descripcion: Define el tablero de inicio del juego con
-;              dos fichas colocadas en posiciones fijas.
-;              El juego clasico 2048 siempre empieza con
-;              dos fichas de valor 2 en el tablero.
-;
-; Parametros:
-;   ninguno
-;
-; Retorna: lista de listas 4x4 con dos fichas de valor 2
-;          y el resto en cero
-;
-; Ejemplo: (tablero-inicial)
-; Resultado: ((2 0 0 0)(0 0 0 0)(0 0 0 0)(0 0 2 0))
-;------------------------------------------------------------
 (define (tablero-inicial)
   (reemplazar-celda
    (reemplazar-celda
     (crear-tablero 4 4) 0 0 2)
    3 2 2))
 
-;------------------------------------------------------------
-; Funcion: estado-inicial
-; Descripcion: Construye el estado inicial completo del
-;              juego, que es una lista con el tablero y
-;              el puntaje en cero. Este estado es el punto
-;              de partida que recibe big-bang.
-;
-; Parametros:
-;   ninguno
-;
-; Retorna: lista de dos elementos (tablero puntaje)
-;          donde tablero es 4x4 y puntaje es 0
-;
-; Ejemplo: (estado-inicial)
-; Resultado: (((2 0 0 0)...(0 0 2 0)) 0)
-;------------------------------------------------------------
 (define (estado-inicial)
   (list (tablero-inicial) 0))
 
 ;------------------------------------------------------------
-; BIG-BANG - punto de entrada del juego
+; Funcion: manejar-tecla
+; Descripcion: Recibe el estado actual y una tecla presionada
+;              y devuelve el nuevo estado con el tablero
+;              movido en la direccion indicada. Solo responde
+;              a las cuatro flechas del teclado. Cualquier
+;              otra tecla devuelve el estado sin cambios.
+;
+; Parametros:
+;   estado: lista (tablero puntaje) con el estado actual
+;   tecla:  string con el nombre de la tecla presionada
+;           ("left", "right", "up", "down")
+;
+; Retorna: lista (tablero puntaje) con el tablero actualizado
+;          segun la direccion de la flecha presionada
+;
+; Ejemplo: (manejar-tecla estado "left")
+; Resultado: estado con tablero movido a la izquierda
 ;------------------------------------------------------------
+(define (manejar-tecla estado tecla)
+  (cond
+    [(string=? tecla "left")
+     (list (mover-tablero-izquierda (car estado)) (cadr estado))]
+    [(string=? tecla "right")
+     (list (mover-tablero-derecha (car estado)) (cadr estado))]
+    [else estado]))
+
+;------------------------------------------------------------
+; BIG-BANG
+;-----------------------------------------------------------
 
 (big-bang (estado-inicial)
   (to-draw render)
+  (on-key  manejar-tecla)
   (name "2048"))
