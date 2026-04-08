@@ -1,4 +1,13 @@
 #lang racket
+(provide 
+ crear-fila
+ crear-tablero
+ elemento-lista
+ obtener-celda
+ reemplazar-en-lista
+ reemplazar-celda
+ quitar-ceros
+ combinar-fila)
 
 
 ;------------------------------------------------------------
