@@ -396,3 +396,21 @@
             (quitar-primera-columna tablero))) ; devuelve el tablero sin la primera columna.
       )
   )
+;----------------------------Movimiento arriba en el tablero------------------------------------------------------------------------------------------
+
+; Funcion: mover-tablero-arriba
+; Descripcion: Mueve todas las filas del tablero hacia arriba, combinando números iguales según las reglas del juego (como 2048).
+;
+; Parametros:
+; Parámetro: tablero que es una lista de listas que representa el tablero del juego (cada sublista es una fila).
+;
+; Retorna: Un nuevo tablero con los valores desplazados hacia arriba.
+;   
+; Ejemplo: (mover-tablero-arriba '((0 2 0 )(0 2 0)(0 0 0)))
+;
+; Resultado: '((0 4 0) (0 0 0) (0 0 0))
+(define(mover-tablero-arriba tablero)
+  (transponer ; Se vuelve a transponer el resultado para restaurar la orientación original del tablero.Ahora el tablero está en su forma normal, pero con los valores movidos hacia arriba.
+   (mover-tablero-izquierda ; Aplica la función de mover a la izquierda sobre esas “filas” (que en realidad son las columnas originales).
+    (transponer tablero))) ;Convierte las columnas en filas.
+  )
