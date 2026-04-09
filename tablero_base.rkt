@@ -994,3 +994,27 @@
     [else tablero] ;Si la dirección no coincide con ninguna de las opciones válidas, simplemente devuelve el tablero sin cambios.
     )
   )
+;--------------Funcion general para calcular el puntaje segun la direccion---------------------------------------
+
+
+; Funcion: puntaje-segun-direccion
+; Descripcion: Agrega el puntaje segun la direccion en el tablero.
+;
+; Parametros:
+;        tablero: el estado actual del tablero (lista de listas).
+;        direccion: un símbolo que indica hacia dónde se quiere mover ('izquierda, 'derecha, 'arriba, 'abajo).
+;
+; Retorna: Un numero que es el puntaje total de mover las filas del tablero segun la direccion que se haya elegido.     
+;   
+; Ejemplo: (puntaje-segun-direccion '((2 0 2)(4 4 8)(2 2 8)) 'izquierda)
+;
+; Resultado: 16
+
+(define(puntaje-segun-direccion tablero direccion)
+  (cond
+    [(equal? direccion 'izquierda)(puntaje-tablero-izquierda tablero)] ; si la direccion es izquierda, se llama a puntaje-tablero-izquierda 
+    [(equal? direccion 'derecha)(puntaje-tablero-derecha tablero)] ; si la direccion es derecha, se llama a puntaje-tablero-derecha
+    [(equal? direccion 'arriba)(puntaje-tablero-arriba tablero)] ; si la direccion es arriba, se llama a puntaje-tablero-arriba
+    [(equal? direccion 'abajo)(puntaje-tablero-abajo tablero)]  ; si la direccion es abajo, se llama a puntaje-tablero-abajo
+    )
+  )
