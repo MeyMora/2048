@@ -820,3 +820,31 @@
       (valor-nueva-ficha))]; decide si el valor de la nueva ficha es 2 o 4 
     )
   )
+
+
+;---------------------------------------Añadir puntos por cada jugada----------------------------------------------------------------------------------------------------------------------------------------
+; Funcion: puntaje-fila-compactada
+; Descripcion:   Calcula el puntaje que se obtiene al combinar fichas iguales en una fila durante la compactación.
+;
+; Parametros:
+;          fila: Una lista de números que representa una fila del tablero.
+; Retorna:
+;         Devuelve un número que representa el puntaje total obtenido al compactar esa fila.
+;   
+; Ejemplo: (puntaje-fila-compactada '(2 2 4 4))
+;
+; Resultado: 12
+
+
+(define(puntaje-fila-compactada fila)
+  (cond
+    [(null? fila)0] ;Si la fila está vacía, no hay nada que sumar.
+    [(null? (cdr fila))0] ;Si la fila tiene solo un elemento, no puede haber combinación.
+    [(=(car fila)(car(cdr fila))) ;Si los dos primeros elementos son iguales
+     (+(+(car fila)(car(cdr fila))) ;Se suman y se añade ese valor al puntaje.
+       (puntaje-fila-compactada(cdr(cdr fila))))] ;y se continúa con el resto de la fila, saltando esas dos fichas.
+    [else
+      (puntaje-fila-compactada(cdr fila)) ;Si no son iguales, simplemente se ignora el primero y se sigue con el resto de la fila.
+     ]
+    )
+  )
