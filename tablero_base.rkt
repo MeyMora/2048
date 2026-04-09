@@ -908,3 +908,23 @@
   (puntaje-fila-izquierda(invertir fila)); primero llama a invertir que invierte la fila. Esto convierte el problema de mover a la derecha en uno equivalente a mover a la izquierda
   ); Y luego aplica puntaje-fila-izquierda a la fila invertida.
 
+; Funcion: puntaje-tablero-derecha
+; Descripcion: Calcula el puntaje total que se obtiene al mover el tablero hacia la derecha.
+;
+; Parametros:
+;          tablero: una lista de listas que representa el tablero completo.
+; Retorna:
+;         Devuelve un número que representa el puntaje total obtenido al mover el tablero hacia la derecha.
+;   
+; Ejemplo: (puntaje-tablero-derecha '((1 2 3 4)(0 2 2 0)(0 0 0 2)))
+;
+; Resultado: 4
+(define(puntaje-tablero-derecha tablero)
+  (cond
+    [(null? tablero) 0] ;Si el tablero está vacío (no hay filas), no hay nada que sumar.
+    [else
+     (+(puntaje-fila-derecha(car tablero)) ;Se toma la primera fila del tablero con (car tablero). Y se calcula el puntaje de esa fila.
+       (puntaje-tablero-derecha(cdr tablero))) ;Se llama recursivamente a la función con el resto del tablero (cdr tablero).
+     ] ; Y se suman ambos resultados.
+    )
+  )
