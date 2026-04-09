@@ -1042,3 +1042,25 @@
    (puntaje-segun-direccion tablero direccion) ;Calcula cuánto puntaje se gana al combinar fichas en esa dirección.
    puntaje-actual)) ; Se pasa tal cual (puntaje-actual) para que jugar-aux lo actualice.
 
+;-----------------Funcion auxiliar para la funcion jugar-----------------------------------------------------------
+
+; Funcion: jugar-aux
+; Descripcion: Ejecuta la lógica de un turno completo en el juego 2048. 
+;
+; Parametros:
+;           tablero-original: el tablero antes del movimiento.
+;           tablero-movido: el tablero después de aplicar el movimiento en la dirección elegida.
+;           puntos-jugada: el puntaje obtenido al combinar fichas en ese movimiento.
+;           puntaje-actual: el puntaje acumulado hasta antes de esta jugada.
+;
+; Retorna: Devuelve el tablero actualizado y el puntaje actualizado  
+
+(define(jugar-aux tablero-original tablero-movido puntos-jugada puntaje-actual)
+  (cond
+    [(tableros-iguales? tablero-original tablero-movido) ;Si el tablero no cambió después del movimiento (es decir, no se pudo mover nada), entonces:Se devuelve el tablero original sin cambios.
+    (list tablero-original puntaje-actual)] ; ; Y el puntaje acumulado se mantiene igual.
+    [else
+     (list(agregar-ficha-aleatoria tablero-movido) ;Si el tablero sí cambió: Se agrega una nueva ficha aleatoria (2 o 4) en una celda vacía del tablero movido.
+          (+ puntaje-actual puntos-jugada))] ; Se suma el puntaje de la jugada (puntos-jugada) al puntaje acumulado (puntaje-actual).
+    )
+  )
