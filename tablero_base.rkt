@@ -888,3 +888,23 @@
      ]  ; y al final se suman ambos resultados.
     )
   )
+
+
+;---------------------Puntaje para el movimiento hacia derecha---------------------------------------
+
+; Funcion: puntaje-fila-derecha
+; Descripcion: Calcula el puntaje total que se obtiene al mover el tablero hacia la derecha.
+;
+; Parametros:
+;          fila: Una lista de números que representa una fila del tablero.
+; Retorna:
+;         Devuelve un numero que es el resultado del puntaje correcto para el movimiento hacia la derecha.
+;   
+; Ejemplo: (puntaje-fila-derecha '(2 0 2 4))
+;
+; Resultado: 4
+
+(define(puntaje-fila-derecha fila)
+  (puntaje-fila-izquierda(invertir fila)); primero llama a invertir que invierte la fila. Esto convierte el problema de mover a la derecha en uno equivalente a mover a la izquierda
+  ); Y luego aplica puntaje-fila-izquierda a la fila invertida.
+
