@@ -970,3 +970,27 @@
   ) ; ;Al aplicar puntaje-tablero-derecha, se calcula el puntaje como si esas “filas” se movieran hacia la derecha.
      ;;Asi que al final en realidad, eso corresponde al movimiento hacia abajo en el tablero original.
 
+;-------------------------Movimiento segun la direccion en el tablero-------------------------------------------
+
+; Funcion: mover-segun-direccion
+; Descripcion: Mueve las filas del tablero segun la direccion que se elija. 
+;
+; Parametros:
+;          tablero: una lista de listas que representa el tablero completo.
+;          direccion: un símbolo que indica hacia dónde se quiere mover ('izquierda, 'derecha, 'arriba, 'abajo).
+; Retorna:
+;         Devuelve el tablero con el movimiento segun la direccion que se eligio.
+;   
+; Ejemplo: (mover-segun-direccion '((2 0 2)(4 4 8)(2 2 8)) 'izquierda)
+;
+; Resultado: '((4 0 0) (8 8 0) (4 8 0))
+
+(define(mover-segun-direccion tablero direccion)
+  (cond
+    [(equal? direccion 'izquierda) (mover-tablero-izquierda tablero)] ;Si la dirección es 'izquierda, se llama a la función mover-tablero-izquierda.
+    [(equal? direccion 'derecha) (mover-tablero-derecha tablero)] ;;Si la dirección es 'derecha, se llama a mover-tablero-derecha.
+    [(equal? direccion 'arriba) (mover-tablero-arriba tablero)] ;;Si la dirección es 'arriba, se llama a mover-tablero-arriba.
+    [(equal? direccion 'abajo) (mover-tablero-abajo tablero)] ;Si la dirección es 'abajo, se llama a mover-tablero-abajo.
+    [else tablero] ;Si la dirección no coincide con ninguna de las opciones válidas, simplemente devuelve el tablero sin cambios.
+    )
+  )
