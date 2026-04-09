@@ -949,3 +949,24 @@
   ) ;Al aplicar puntaje-tablero-izquierda, se calcula el puntaje como si esas “filas” se movieran hacia la izquierda.
     ;Que al final en realidad, eso corresponde al movimiento hacia arriba en el tablero original.
 
+
+;--------------------------------------------Puntaje movimiento hacia abajo---------------------------------------------------------------------------------
+; Funcion: puntaje-tablero-abajo
+; Descripcion: Calcula el puntaje total que se obtiene al mover el tablero hacia abajo. De forma que transpone el tablero para convertir columnas en filas
+;                        y luego reutiliza la lógica de puntaje-tablero-derecha para calcular el puntaje de mover hacia abajo.
+;
+; Parametros:
+;          tablero: una lista de listas que representa el tablero completo.
+; Retorna:
+;         Devuelve un número que representa el puntaje total obtenido al mover el tablero hacia la abajo.
+;   
+; Ejemplo: (puntaje-tablero-abajo '((2 0 2)(4 4 8)(2 2 8)))
+;
+; Resultado: 16
+
+
+(define(puntaje-tablero-abajo tablero)
+  (puntaje-tablero-derecha(transponer tablero)) ; se llama a la funcion transponer que convierte las filas en columnas y las columnas en filas. Para tratar cada columna como una fila.
+  ) ; ;Al aplicar puntaje-tablero-derecha, se calcula el puntaje como si esas “filas” se movieran hacia la derecha.
+     ;;Asi que al final en realidad, eso corresponde al movimiento hacia abajo en el tablero original.
+
