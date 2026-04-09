@@ -3,10 +3,6 @@
 (require 2htdp/universe)
 (require "tablero_base.rkt")
 
-;------------------------------------------------------------
-; CONSTANTES GLOBALES
-;------------------------------------------------------------
-
 (define TAMANO-CELDA 100)
 (define ESPACIO 10)
 (define FILAS 4)
@@ -57,9 +53,8 @@
                        (color-texto-celda valor))]))
 
 (define (dibujar-celda valor)
-  (overlay
-   (texto-celda valor)
-   (square TAMANO-CELDA "solid" (color-fondo-celda valor))))
+  (overlay (texto-celda valor)
+           (square TAMANO-CELDA "solid" (color-fondo-celda valor))))
 
 (define (separador-celda)
   (rectangle ESPACIO TAMANO-CELDA "solid" (hex->color "#bbada0")))
@@ -69,10 +64,9 @@
     [(null? fila)       empty-image]
     [(null? (cdr fila)) (dibujar-celda (car fila))]
     [else
-     (beside
-      (dibujar-celda (car fila))
-      (separador-celda)
-      (dibujar-fila (cdr fila)))]))
+     (beside (dibujar-celda (car fila))
+             (separador-celda)
+             (dibujar-fila (cdr fila)))]))
 
 (define (separador-fila)
   (rectangle ANCHO-TABLERO ESPACIO "solid" (hex->color "#bbada0")))
@@ -82,37 +76,14 @@
     [(null? tablero)       empty-image]
     [(null? (cdr tablero)) (dibujar-fila (car tablero))]
     [else
-     (above
-      (dibujar-fila (car tablero))
-      (separador-fila)
-      (dibujar-filas (cdr tablero)))]))
+     (above (dibujar-fila (car tablero))
+            (separador-fila)
+            (dibujar-filas (cdr tablero)))]))
 
 (define (dibujar-tablero tablero)
   (overlay
-   (above
-    (separador-fila)
-    (dibujar-filas tablero)
-    (separador-fila))
+   (above (separador-fila) (dibujar-filas tablero) (separador-fila))
    (rectangle ANCHO-TABLERO ALTO-TABLERO "solid" (hex->color "#bbada0"))))
-
-(define (caja-puntaje puntaje)
-  (overlay
-   (above
-    (text "SCORE" 14 (hex->color "#f0ebe3"))
-    (rectangle 1 4 "solid" "transparent")
-    (text (number->string puntaje) 22 "white"))
-   (rectangle 100 58 "solid" (hex->color "#bbada0"))))
-
-(define (dibujar-header puntaje)
-  (overlay/align
-   "left" "middle"
-   (beside
-    (rectangle 14 10 "solid" "transparent")
-    (text "2048" 52 (hex->color "#776e65"))
-    (rectangle (- ANCHO-TABLERO 14 52 100 14) 10 "solid" "transparent")
-    (caja-puntaje puntaje)
-    (rectangle 14 10 "solid" "transparent"))
-   (rectangle ANCHO-TABLERO ALTO-HEADER "solid" (hex->color "#faf8ef"))))
 
 (define (mi-list-ref lista indice)
   (cond
@@ -125,21 +96,17 @@
     [(= (car fila) 0)
      (cons (list fila-i col-i)
            (celdas-vacias-fila (cdr fila) fila-i (+ col-i 1)))]
-    [else
-     (celdas-vacias-fila (cdr fila) fila-i (+ col-i 1))]))
+    [else (celdas-vacias-fila (cdr fila) fila-i (+ col-i 1))]))
 
 (define (celdas-vacias tablero fila-i)
   (cond
     [(null? tablero) '()]
     [else
-     (append
-      (celdas-vacias-fila (car tablero) fila-i 0)
-      (celdas-vacias (cdr tablero) (+ fila-i 1)))]))
+     (append (celdas-vacias-fila (car tablero) fila-i 0)
+             (celdas-vacias (cdr tablero) (+ fila-i 1)))]))
 
 (define (valor-nueva-ficha)
-  (cond
-    [(< (random 10) 9) 2]
-    [else              4]))
+  (cond [(< (random 10) 9) 2] [else 4]))
 
 (define (colocar-ficha-aleatoria tablero)
   (cond
@@ -155,11 +122,7 @@
 
 (define (tablero-inicial)
   (colocar-ficha-aleatoria
-   (colocar-ficha-aleatoria
-    (crear-tablero 4 4))))
-
-(define (estado-inicial)
-  (list (tablero-inicial) 0))
+   (colocar-ficha-aleatoria (crear-tablero 4 4))))
 
 (define (tiene-2048-fila fila)
   (cond
@@ -175,131 +138,201 @@
 
 (define (juego-terminado estado)
   (cond
-    [(tiene-2048 (car estado))              #t]
-    [(perdio? (car estado))                 #t]
-    [else                                   #f]))
+    [(tiene-2048 (car estado)) #t]
+    [(perdio? (car estado))    #t]
+    [else                      #f]))
+
+(define (calcular-puntos-fila fa fd)
+  (cond
+    [(or (null? fa) (null? fd)) 0]
+    [(and (not (= (car fa) 0))
+          (= (car fd) (* 2 (car fa))))
+     (+ (car fd) (calcular-puntos-fila (cdr fa) (cdr fd)))]
+    [else (calcular-puntos-fila (cdr fa) (cdr fd))]))
+
+(define (calcular-puntos ta td)
+  (cond
+    [(or (null? ta) (null? td)) 0]
+    [else (+ (calcular-puntos-fila (car ta) (car td))
+             (calcular-puntos (cdr ta) (cdr td)))]))
+
+;------------------------------------------------------------
+; ESTADO: (tablero puntaje mejor-puntaje)
+; El tercer elemento guarda el record de la sesion.
+;------------------------------------------------------------
+
+(define (estado-inicial)
+  (list (tablero-inicial) 0 0))
+
+(define (estado-tablero e) (car   e))
+(define (estado-puntaje e) (cadr  e))
+(define (estado-mejor   e) (caddr e))
+
+;------------------------------------------------------------
+; Funcion: caja-score
+; Descripcion: Crea una caja visual de puntaje con etiqueta
+;              y valor numerico sobre fondo cafe. Se usa
+;              para SCORE y BEST en el header.
+;
+; Parametros:
+;   etiqueta: string con el nombre de la caja
+;   valor:    numero entero a mostrar
+;
+; Retorna: imagen de la caja con etiqueta y numero
+;
+; Ejemplo: (caja-score "BEST" 4096)
+; Resultado: caja cafe con "BEST" y "4096"
+;------------------------------------------------------------
+(define (caja-score etiqueta valor)
+  (overlay
+   (above (text etiqueta 13 (hex->color "#f0ebe3"))
+          (rectangle 1 4 "solid" "transparent")
+          (text (number->string valor) 20 "white"))
+   (rectangle 94 58 "solid" (hex->color "#bbada0"))))
+
+;------------------------------------------------------------
+; Funcion: dibujar-header
+; Descripcion: Header con titulo y dos cajas de puntaje:
+;              SCORE con el puntaje actual y BEST con el
+;              mejor puntaje de la sesion.
+;
+; Parametros:
+;   puntaje: numero entero del puntaje actual
+;   mejor:   numero entero del mejor puntaje de la sesion
+;
+; Retorna: imagen del header completo
+;
+; Ejemplo: (dibujar-header 512 2048)
+; Resultado: header con SCORE 512 y BEST 2048
+;------------------------------------------------------------
+(define (dibujar-header puntaje mejor)
+  (overlay/align
+   "left" "middle"
+   (beside
+    (rectangle 14 10 "solid" "transparent")
+    (text "2048" 52 (hex->color "#776e65"))
+    (rectangle (- ANCHO-TABLERO 14 52 94 8 94 14) 10 "solid" "transparent")
+    (caja-score "SCORE" puntaje)
+    (rectangle 8 10 "solid" "transparent")
+    (caja-score "BEST" mejor)
+    (rectangle 14 10 "solid" "transparent"))
+   (rectangle ANCHO-TABLERO ALTO-HEADER "solid" (hex->color "#faf8ef"))))
 
 (define (pantalla-fin estado)
   (overlay
    (above
-    (text (cond
-            [(tiene-2048 (car estado)) "¡Ganaste!"]
-            [else                      "Game Over"])
+    (text (cond [(tiene-2048 (estado-tablero estado)) "¡Ganaste!"]
+                [else "Game Over"])
           44
-          (cond
-            [(tiene-2048 (car estado)) (hex->color "#776e65")]
-            [else                      (hex->color "#f9f6f2")]))
+          (cond [(tiene-2048 (estado-tablero estado)) (hex->color "#776e65")]
+                [else (hex->color "#f9f6f2")]))
     (rectangle 1 12 "solid" "transparent")
     (text "Presiona R para reiniciar" 18 (hex->color "#776e65")))
-   (rectangle ANCHO-TABLERO ALTO-TABLERO "solid"
-              (make-color 237 224 200 190))
-   (dibujar-tablero (car estado))))
+   (rectangle ANCHO-TABLERO ALTO-TABLERO "solid" (make-color 237 224 200 190))
+   (dibujar-tablero (estado-tablero estado))))
 
 (define (render estado)
   (above
-   (dibujar-header (cadr estado))
+   (dibujar-header (estado-puntaje estado) (estado-mejor estado))
    (rectangle ANCHO-TABLERO ESPACIO "solid" (hex->color "#faf8ef"))
    (cond
      [(juego-terminado estado) (pantalla-fin estado)]
-     [else                     (dibujar-tablero (car estado))])))
-
-(define (aplicar-movimiento tablero tablero-movido)
-  (cond
-    [(tableros-iguales? tablero tablero-movido) tablero-movido]
-    [else (colocar-ficha-aleatoria tablero-movido)]))
+     [else (dibujar-tablero (estado-tablero estado))])))
 
 ;------------------------------------------------------------
-; Funcion: calcular-puntos-fila
-; Descripcion: Recorre una fila antes y despues del movimiento
-;              y suma los valores de las celdas que se
-;              combinaron. Una combinacion se detecta cuando
-;              una celda del tablero nuevo tiene el doble del
-;              valor de la celda correspondiente del viejo.
+; Funcion: actualizar-mejor
+; Descripcion: Compara puntaje actual con el mejor y devuelve
+;              el mayor. Se usa al final de cada movimiento
+;              para mantener el record actualizado.
 ;
 ; Parametros:
-;   fila-antes:  fila original antes del movimiento
-;   fila-despues: fila resultado del movimiento
+;   puntaje: puntaje del movimiento actual
+;   mejor:   mejor puntaje registrado hasta ahora
 ;
-; Retorna: numero entero con los puntos ganados en esa fila
+; Retorna: el mayor de los dos valores
 ;
-; Ejemplo: (calcular-puntos-fila '(2 2 0 0) '(4 0 0 0))
-; Resultado: 4
+; Ejemplo: (actualizar-mejor 1024 512)
+; Resultado: 1024
 ;------------------------------------------------------------
-(define (calcular-puntos-fila fila-antes fila-despues)
-  (cond
-    [(or (null? fila-antes) (null? fila-despues)) 0]
-    [(and (not (= (car fila-antes) 0))
-          (= (car fila-despues) (* 2 (car fila-antes))))
-     (+ (car fila-despues)
-        (calcular-puntos-fila (cdr fila-antes) (cdr fila-despues)))]
-    [else
-     (calcular-puntos-fila (cdr fila-antes) (cdr fila-despues))]))
+(define (actualizar-mejor puntaje mejor)
+  (cond [(> puntaje mejor) puntaje]
+        [else              mejor]))
 
 ;------------------------------------------------------------
-; Funcion: calcular-puntos
-; Descripcion: Recorre fila por fila los dos tableros y
-;              acumula todos los puntos obtenidos por las
-;              combinaciones ocurridas en el movimiento.
+; Funcion: puntos-del-movimiento
+; Descripcion: Calcula cuantos puntos gano el jugador en
+;              un movimiento comparando el tablero antes y
+;              despues. Se extrae como funcion separada para
+;              poder reutilizarla sin duplicar codigo.
 ;
 ; Parametros:
-;   tablero-antes:   tablero original antes del movimiento
-;   tablero-despues: tablero resultado del movimiento
+;   estado:         estado actual con tablero y puntaje
+;   tablero-movido: tablero resultado del movimiento
 ;
-; Retorna: numero entero con el total de puntos del movimiento
+; Retorna: numero entero con los puntos del movimiento
 ;
-; Ejemplo: (calcular-puntos tablero-antes tablero-despues)
-; Resultado: suma de todos los valores combinados
+; Ejemplo: (puntos-del-movimiento estado t-movido)
+; Resultado: suma de combinaciones realizadas
 ;------------------------------------------------------------
-(define (calcular-puntos tablero-antes tablero-despues)
-  (cond
-    [(or (null? tablero-antes) (null? tablero-despues)) 0]
-    [else
-     (+ (calcular-puntos-fila (car tablero-antes) (car tablero-despues))
-        (calcular-puntos (cdr tablero-antes) (cdr tablero-despues)))]))
+(define (puntos-del-movimiento estado tablero-movido)
+  (+ (estado-puntaje estado)
+     (calcular-puntos (estado-tablero estado) tablero-movido)))
 
 ;------------------------------------------------------------
-; Funcion: aplicar-movimiento-con-puntos
-; Descripcion: Aplica un movimiento, calcula los puntos
-;              obtenidos y devuelve el nuevo estado completo
-;              con el tablero actualizado y el puntaje sumado.
-;              Solo coloca ficha nueva si el tablero cambio.
+; Funcion: aplicar-con-mejor
+; Descripcion: Aplica un movimiento, calcula puntos, actualiza
+;              el mejor puntaje y coloca nueva ficha. Si el
+;              tablero no cambio devuelve el estado sin tocar.
 ;
 ; Parametros:
-;   estado:          lista (tablero puntaje) actual
+;   estado:          estado actual (tablero puntaje mejor)
 ;   tablero-movido:  tablero resultado del movimiento
 ;
-; Retorna: lista (tablero-nuevo puntaje-nuevo) actualizado
+; Retorna: estado nuevo con tablero, puntaje y mejor
+;          actualizados
 ;
-; Ejemplo: (aplicar-movimiento-con-puntos estado t-movido)
-; Resultado: estado con tablero y puntaje actualizados
+; Ejemplo: (aplicar-con-mejor estado t-movido)
+; Resultado: estado con todos los campos actualizados
 ;------------------------------------------------------------
-(define (aplicar-movimiento-con-puntos estado tablero-movido)
+(define (aplicar-con-mejor estado tablero-movido)
   (cond
-    [(tableros-iguales? (car estado) tablero-movido)
+    [(tableros-iguales? (estado-tablero estado) tablero-movido)
+     estado]
+    [else
+     (cond
+       [#t
+        (cond
+          [#t
+           (list (colocar-ficha-aleatoria tablero-movido)
+                 (puntos-del-movimiento estado tablero-movido)
+                 (actualizar-mejor
+                  (puntos-del-movimiento estado tablero-movido)
+                  (estado-mejor estado)))])])]))
+
+; version sin cond anidados innecesarios:
+(define (aplicar-con-mejor-v2 estado tablero-movido)
+  (cond
+    [(tableros-iguales? (estado-tablero estado) tablero-movido)
      estado]
     [else
      (list (colocar-ficha-aleatoria tablero-movido)
-           (+ (cadr estado)
-              (calcular-puntos (car estado) tablero-movido)))]))
+           (puntos-del-movimiento estado tablero-movido)
+           (actualizar-mejor (puntos-del-movimiento estado tablero-movido)
+                             (estado-mejor estado)))]))
 
 (define (manejar-tecla estado tecla)
   (cond
     [(string=? tecla "r")
-     (estado-inicial)]
-    [(juego-terminado estado)
-     estado]
+     (list (tablero-inicial) 0 (estado-mejor estado))]
+    [(juego-terminado estado) estado]
     [(string=? tecla "left")
-     (aplicar-movimiento-con-puntos
-      estado (mover-tablero-izquierda (car estado)))]
+     (aplicar-con-mejor-v2 estado (mover-tablero-izquierda (estado-tablero estado)))]
     [(string=? tecla "right")
-     (aplicar-movimiento-con-puntos
-      estado (mover-tablero-derecha (car estado)))]
+     (aplicar-con-mejor-v2 estado (mover-tablero-derecha (estado-tablero estado)))]
     [(string=? tecla "up")
-     (aplicar-movimiento-con-puntos
-      estado (mover-tablero-arriba (car estado)))]
+     (aplicar-con-mejor-v2 estado (mover-tablero-arriba (estado-tablero estado)))]
     [(string=? tecla "down")
-     (aplicar-movimiento-con-puntos
-      estado (mover-tablero-abajo (car estado)))]
+     (aplicar-con-mejor-v2 estado (mover-tablero-abajo (estado-tablero estado)))]
     [else estado]))
 
 (big-bang (estado-inicial)
