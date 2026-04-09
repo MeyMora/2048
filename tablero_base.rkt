@@ -928,3 +928,24 @@
      ] ; Y se suman ambos resultados.
     )
   )
+
+
+;--------------------------------------------Puntaje movimiento hacia arriba---------------------------------------------------------------------------------
+
+; Funcion: puntaje-tablero-arriba
+; Descripcion: Calcula el puntaje total que se obtiene al mover el tablero hacia arriba. De forma que transpone el tablero para convertir columnas en filas
+;                        y luego reutiliza la lógica de puntaje-tablero-izquierda para calcular el puntaje de mover hacia arriba.
+;
+; Parametros:
+;          tablero: una lista de listas que representa el tablero completo.
+; Retorna:
+;         Devuelve un número que representa el puntaje total obtenido al mover el tablero hacia la arriba.
+;   
+; Ejemplo: (puntaje-tablero-arriba '((2 0 2)(4 4 8)(2 2 2)))
+;
+; Resultado: 0
+(define(puntaje-tablero-arriba tablero)
+  (puntaje-tablero-izquierda(transponer tablero)) ; se llama a la funcion transponer que convierte las filas en columnas y las columnas en filas. Para tratar cada columna como una fila.
+  ) ;Al aplicar puntaje-tablero-izquierda, se calcula el puntaje como si esas “filas” se movieran hacia la izquierda.
+    ;Que al final en realidad, eso corresponde al movimiento hacia arriba en el tablero original.
+
