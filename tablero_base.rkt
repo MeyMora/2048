@@ -1018,3 +1018,27 @@
     [(equal? direccion 'abajo)(puntaje-tablero-abajo tablero)]  ; si la direccion es abajo, se llama a puntaje-tablero-abajo
     )
   )
+
+
+;---------------------Funcion general de jugar--------------------------------------------------------------------
+
+; Funcion: jugar
+; Descripcion: Simulacion de jugar 2048
+;
+; Parametros:
+;       tablero: el estado actual del tablero (lista de listas).
+;       direccion: hacia dónde se quiere mover ('izquierda, 'derecha, 'arriba, 'abajo).
+;       puntaje-actual: el puntaje acumulado hasta este turno.
+;
+; Retorna: Devolver el nuevo estado del juego (tablero + puntaje).    
+;   
+; Ejemplo: (jugar '((2 0 2 4)(4 4 8 0)(2 2 2 2))'izquierda 100)
+; Resultado: '(((4 4 2 0) (8 8 0 0) (4 4 0 0)) 120)
+
+(define(jugar tablero direccion puntaje-actual)
+  (jugar-aux
+   tablero
+   (mover-segun-direccion tablero direccion) ;Aplica el movimiento en la dirección indicada.
+   (puntaje-segun-direccion tablero direccion) ;Calcula cuánto puntaje se gana al combinar fichas en esa dirección.
+   puntaje-actual)) ; Se pasa tal cual (puntaje-actual) para que jugar-aux lo actualice.
+
