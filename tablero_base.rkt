@@ -866,3 +866,25 @@
                                                 ;Esto simula el movimiento hacia la izquierda, porque en el juego los números se compactan y los ceros (espacios vacíos) desaparecen.
                                                 ;Luego pasa la fila compactada a puntaje-fila-compactada, que suma los valores de las combinaciones posibles.
 
+;--------------------------Puntaje para el movimiento hacia izquierda en el tablero-----------------------------------------------------------------------------------
+
+; Funcion: puntaje-tablero-izquierda
+; Descripcion: Calcula el puntaje total que se obtiene al mover el tablero hacia la izquierda.
+;
+; Parametros:
+;          tablero: Una lista de listas que representa el tablero completo.
+; Retorna:
+;         Devuelve un número que representa el puntaje total obtenido al mover el tablero hacia la izquierda.
+;   
+; Ejemplo: (puntaje-tablero-izquierda '((2 0 2 4)(4 4 8 0)(2 2 2 2)))
+;
+; Resultado: 20
+(define(puntaje-tablero-izquierda tablero)
+  (cond
+    [(null? tablero)0] ;Si el tablero está vacío (no hay filas), no hay nada que sumar.
+    [else
+     (+(puntaje-fila-izquierda(car tablero)) ;Se toma la primera fila del tablero y se calcula el puntaje de esa fila con puntaje-fila-izquierda.
+       (puntaje-tablero-izquierda(cdr tablero))); ;Se llama recursivamente a la función con el resto del tablero (cdr tablero). 
+     ]  ; y al final se suman ambos resultados.
+    )
+  )
