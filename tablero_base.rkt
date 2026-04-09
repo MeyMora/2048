@@ -848,3 +848,21 @@
      ]
     )
   )
+
+; Funcion: puntaje-fila-izquierda
+; Descripcion:    Calcula el puntaje que se obtiene al mover una fila hacia la izquierda en el juego 2048.
+;
+; Parametros:
+;          fila: Una lista de números que representa una fila del tablero.
+; Retorna:
+;         Devuelve un número que representa el puntaje total obtenido al mover esa fila hacia la izquierda.
+;   
+; Ejemplo: (puntaje-fila-izquierda '(2 0 2 4))
+;
+; Resultado: 4
+
+(define(puntaje-fila-izquierda fila)
+  (puntaje-fila-compactada(quitar-ceros fila))) ; Primero elimina los ceros de la fila con quitar-ceros.
+                                                ;Esto simula el movimiento hacia la izquierda, porque en el juego los números se compactan y los ceros (espacios vacíos) desaparecen.
+                                                ;Luego pasa la fila compactada a puntaje-fila-compactada, que suma los valores de las combinaciones posibles.
+
