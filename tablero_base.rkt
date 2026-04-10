@@ -14,7 +14,10 @@
  perdio?
  tableros-iguales?
  mover-tablero-arriba
- mover-tablero-abajo)
+ mover-tablero-abajo
+ agregar-ficha-aleatoria
+ jugar
+ )
 
 
 ;------------------------------------------------------------
