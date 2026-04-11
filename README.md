@@ -38,3 +38,33 @@ Desarrollar una aplicación que permita reafirmar el conocimiento del paradigma 
 ---
 
 ## 🧩 Estructura del Proyecto
+
+
+```text
+Proyecto2048/
+├── README.md
+├── interfaz.rkt
+└── tablero_base.rkt
+
+### Descripción de archivos
+
+- **README.md**  
+  Contiene la descripción general del proyecto, objetivos, funcionalidades y estructura.
+
+- **interfaz.rkt**  
+  Maneja la interfaz gráfica del juego.  
+  Aquí se definen:
+  - El dibujo del tablero y las fichas.
+  - Los colores y dimensiones de la ventana.
+  - La visualización del puntaje.
+  - La interacción con el usuario.
+
+- **tablero_base.rkt**  
+  Contiene la lógica principal del juego.  
+  Aquí se implementan funciones como:
+  - Creación del tablero.
+  - Acceso y reemplazo de celdas.
+  - Movimiento a la izquierda, derecha, arriba y abajo.
+  - Combinación de fichas.
+  - Verificación de victoria o derrota.
+  - Generación de fichas aleatorias.
