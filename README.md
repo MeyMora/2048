@@ -40,6 +40,7 @@ Desarrollar una aplicación que permita reafirmar el conocimiento del paradigma 
 ## 🧩 Estructura del Proyecto
 
 
+```text
 Proyecto2048/
 ├── README.md
 ├── interfaz.rkt
